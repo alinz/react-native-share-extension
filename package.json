@@ -1,0 +1,28 @@
+{
+  "name": "react-native-share-extension",
+  "version": "1.0.0",
+  "description": "react-native for share extension for both ios and android",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:alinz/react-native-share-extension.git"
+  },
+  "keywords": [
+    "react-component",
+    "react-native",
+    "share-extension"
+  ],
+  "author": {
+    "name": "Ali Najafizadeh",
+    "email": "a.najafizadeh@gmail.com",
+    "url": "http://github.com/alinz"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alinz/react-native-share-extension"
+  },
+  "homepage": "https://github.com/alinz/react-native-share-extension"
+}
