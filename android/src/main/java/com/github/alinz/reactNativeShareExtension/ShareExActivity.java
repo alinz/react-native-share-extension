@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ShareActivity extends ReactActivity {
+public abstract class ShareExActivity extends ReactActivity {
 
     private class InternalShare extends ReactContextBaseJavaModule {
         public InternalShare(ReactApplicationContext reactContext) {
@@ -31,7 +31,7 @@ public class ShareActivity extends ReactActivity {
 
         @Override
         public String getName() {
-            return "ShareExtension";
+            return "ReactNativeShareExtension";
         }
 
         @ReactMethod
@@ -69,24 +69,6 @@ public class ShareActivity extends ReactActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    /**
-     * Returns the name of the main component registered from JavaScript.
-     * This is used to schedule rendering of the component.
-     */
-    @Override
-    protected String getMainComponentName() {
-        return "Share";
-    }
-
-    /**
-     * Returns whether dev mode should be enabled.
-     * This enables e.g. the dev menu.
-     */
-    @Override
-    protected boolean getUseDeveloperSupport() {
-        return com.app.BuildConfig.DEBUG;
     }
 
     /**
