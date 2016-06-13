@@ -281,3 +281,9 @@ const { type, value } = await ShareExtension.data()
 - `close()`
 
 it simply close the share extension and return the touch event back to application that triggers the share.
+
+# Final note
+
+I have used `react-native-modal` module to handle the showing and hiding share extension which makes the experience more enjoyable for the user.
+
+Cheers
