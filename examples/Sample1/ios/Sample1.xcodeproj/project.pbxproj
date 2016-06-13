@@ -953,6 +953,7 @@
 				41B5DE5B1D0B565400949BD5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Sample1" */ = {
 			isa = XCConfigurationList;

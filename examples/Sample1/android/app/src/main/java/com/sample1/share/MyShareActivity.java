@@ -7,7 +7,7 @@ import com.sample1.BuildConfig;
 public class MyShareActivity extends ShareExActivity {
     @Override
     protected String getMainComponentName() {
-        return "Share";
+        return "MyShareEx";
     }
 
     @Override

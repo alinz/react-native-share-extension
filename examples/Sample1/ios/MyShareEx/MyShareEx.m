@@ -15,8 +15,10 @@
 
 @implementation MyShareEx
 
+RCT_EXPORT_MODULE();
+
 - (UIView*) shareView {
-  NSString *myShareComponentName = @"SampleShare";
+  NSString *myShareComponentName = @"MyShareEx";
   NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];
   
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
