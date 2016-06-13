@@ -2,6 +2,11 @@
 
 This is a helper module which brings react native as an engine to drive share extension for your app.
 
+<p align="center">
+    <img src ="assets/ios-demo.gif" />
+    <img src ="assets/android-demo.gif" />
+</p>
+
 # Installation
 
 installation should be very easy by just installing it from npm.
@@ -284,6 +289,6 @@ it simply close the share extension and return the touch event back to applicati
 
 # Final note
 
-I have used `react-native-modal` module to handle the showing and hiding share extension which makes the experience more enjoyable for the user.
+I have used `react-native-modalbox` module to handle the showing and hiding share extension which makes the experience more enjoyable for the user.
 
 Cheers
