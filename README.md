@@ -168,7 +168,7 @@ import com.sample1.BuildConfig;
 public class MyShareActivity extends ShareExActivity {
     @Override
     protected String getMainComponentName() {
-        return "Share";
+        return "MyShareEx";
     }
 
     @Override
@@ -232,3 +232,52 @@ and in `values/styles.xml`
 ```
 
 - now you should be able to compile the code without error.
+
+# Share Component
+
+so both share extension and main application are using the same code base, or same main.jsbundle file. So the trick to separate Share and Main App is registering 2 different Component entries with `AppRegistry.registerComponent`.
+
+so in both iOS and android share extension we are telling react to load `MyShareEx` component from js.
+
+so in `index.ios.js` and `index.android.js` we are writing the same code as
+
+```js
+//index.android.js
+import React from 'react'
+import { AppRegistry } from 'react-native'
+
+import App from './app.android'
+import Share from './share.android'
+
+AppRegistry.registerComponent('Sample1', () => App)
+AppRegistry.registerComponent('MyShareEx', () => Share)
+```
+
+```js
+//index.ios.js
+import React from 'react'
+import { AppRegistry } from 'react-native'
+
+import App from './app.ios'
+import Share from './share.ios'
+
+AppRegistry.registerComponent('Sample1', () => App)
+AppRegistry.registerComponent('MyShareEx', () => Share)
+```
+
+so the `app.ios` and `app.android.js` refers to main app and `share.ios.js` and `share.android.js` refers to share extension.
+
+# Share Extension APIs
+
+- `data()` is a function that returns a promise. once the promise is resolved, you get two values, `type` and `value`.
+
+```js
+import ShareExtension from 'react-native-share-extension'
+...
+
+const { type, value } = await ShareExtension.data()
+```
+
+- `close()`
+
+it simply close the share extension and return the touch event back to application that triggers the share.
