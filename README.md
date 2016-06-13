@@ -137,3 +137,98 @@ the setup requires a little bit more work. I will try to describe as detail as p
 - now try to build the project. it should build successfully.
 
 ## Android
+
+- edit `android/settings.gradle` file and add the following
+
+```
+include ':app', ':react-native-share-extension'
+
+project(':react-native-share-extension').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share-extension/android')
+```
+
+- edit `android/app/build.gradle` and add the following line before react section in dependency
+
+```
+dependencies {
+    ...
+    compile project(':react-native-share-extension')
+    compile "com.facebook.react:react-native:+"
+}
+```
+
+- create a package called `share` under your java project and create a new Java class. in my case I call it `MyShareActivity.java`. then paste the following code there.
+
+```java
+package com.sample1.share;
+
+import com.github.alinz.reactNativeShareExtension.ShareExActivity;
+import com.sample1.BuildConfig;
+
+
+public class MyShareActivity extends ShareExActivity {
+    @Override
+    protected String getMainComponentName() {
+        return "Share";
+    }
+
+    @Override
+    protected boolean getUseDeveloperSupport() {
+        return BuildConfig.DEBUG;
+    }
+}
+```
+
+- edit `android/app/src/main/AndroidMainfest.xml` and add the new `activity` right after `devSettingActivity`.
+
+```xml
+<activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
+
+<activity
+    android:noHistory="true"
+    android:name=".share.MyShareActivity"
+    android:configChanges="orientation"
+    android:label="@string/title_activity_share"
+    android:screenOrientation="portrait"
+    android:theme="@style/Theme.Share.Transparent" >
+   <intent-filter>
+     <action android:name="android.intent.action.SEND" />
+     <category android:name="android.intent.category.DEFAULT" />
+     <data android:mimeType="text/plain" />
+   </intent-filter>
+</activity>
+```
+
+in this new `activity` I have used 2 variables `@string/title_activity_share` and `@style/Theme.Share.Transparent`. you can add those in `res/values`.
+
+so in `values/strings.xml`
+
+```xml
+<resources>
+    ...
+    <string name="title_activity_share">MyShareEx</string>
+</resources>
+```
+
+and in `values/styles.xml`
+
+```xml
+<resources>
+    ...
+    <style name="Share.Window" parent="android:Theme">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
+
+    <style name="Theme.Share.Transparent" parent="android:Theme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowAnimationStyle">@style/Share.Window</item>
+    </style>
+</resources>
+```
+
+- now you should be able to compile the code without error.
