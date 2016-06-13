@@ -1,3 +1,5 @@
 rootProject.name = 'Sample1'
 
-include ':app'
+include ':app', ':react-native-share-extension'
+
+project(':react-native-share-extension').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share-extension/android')
