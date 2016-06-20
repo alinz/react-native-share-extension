@@ -72,15 +72,32 @@ public abstract class ShareExActivity extends ReactActivity {
     }
 
     /**
-     * A list of packages used by the app. If the app uses additional views
-     * or modules besides the default ones, add more packages here.
+     * Do not override this one. if you want to add more packages to share extension
+     * use @link getMorePackages
      */
     @Override
     protected List<ReactPackage> getPackages() {
-        return Arrays.<ReactPackage>asList(
-                new MainReactPackage(),
-                new SharePackage()
-        );
+        List<ReactPackage> packages = new ArrayList<ReactPackage>();
+
+        packages.add(new MainReactPackage());
+        packages.add(new SharePackage());
+
+        List<ReactPackage> morePackages = this.getMorePackages();
+
+        if (morePackages != null) {
+            for (ReactPackage pak : morePackages) {
+                packages.add(pak);
+            }
+        }
+
+        return packages;
+    }
+
+    /**
+     * override this method if you need more packages to be added to your share extension.
+     */
+    protected List<ReactPackage> getMorePackages() {
+        return null;
     }
 
     protected WritableMap processIntent() {

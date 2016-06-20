@@ -238,6 +238,9 @@ and in `values/styles.xml`
 
 - now you should be able to compile the code without error.
 
+> if you need to add more packages to your share extension do not overrides
+`getPackages`. instead override `getMorePackages` method under `ShareExActivity`.
+
 # Share Component
 
 so both share extension and main application are using the same code base, or same main.jsbundle file. So the trick to separate Share and Main App is registering 2 different Component entries with `AppRegistry.registerComponent`.
