@@ -92,7 +92,7 @@ the setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_12.png" />
 </p>
 
-- we need to add some flags as well, so search for `Other Linker Flags` and add `-ObjC` and `lc++`
+- we need to add some flags as well, so search for `Other Linker Flags` and add `-ObjC` and `-lc++`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_13.png" />
