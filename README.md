@@ -292,6 +292,23 @@ const { type, value } = await ShareExtension.data()
 
 it simply close the share extension and return the touch event back to application that triggers the share.
 
+# Test on Device without dev-server
+
+because share extension in ios devices are separate containers and the do not have access to main app folder, you have to build the script twice and package it inside the share extension container. The easiest way of doing this is create a `New Script Phase` in `Build Phases` of your share extension and copy the following line
+
+```bash
+export NODE_BINARY=node
+../node_modules/react-native/packager/react-native-xcode.sh
+```
+
+<p align="center">
+    <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_16.png" />
+</p>
+
+<p align="center">
+    <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_17.png" />
+</p>
+
 # Final note
 
 I have used `react-native-modalbox` module to handle the showing and hiding share extension which makes the experience more enjoyable for the user.
