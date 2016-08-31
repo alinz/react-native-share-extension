@@ -126,7 +126,7 @@ RCT_EXPORT_MODULE();
 
 - (UIView*) shareView {
   //this is the name of registered component that ShareExtension loads.
-  NSString *myShareComponentName = @"SampleShare";
+  NSString *myShareComponentName = @"MyShareEx";
 
   NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];
 
