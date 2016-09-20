@@ -115,6 +115,7 @@ the setup requires a little bit more work. I will try to describe as detail as p
 ```objective-c
 #import <Foundation/Foundation.h>
 #import "ReactNativeShareExtension.h"
+#import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
 
 @interface MyShareEx : ReactNativeShareExtension
@@ -125,15 +126,14 @@ the setup requires a little bit more work. I will try to describe as detail as p
 RCT_EXPORT_MODULE();
 
 - (UIView*) shareView {
-  //this is the name of registered component that ShareExtension loads.
-  NSString *myShareComponentName = @"MyShareEx";
+  NSURL *jsCodeLocation;
 
-  NSURL *jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/index.ios.bundle?platform=ios&dev=true"];
+  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-         moduleName:myShareComponentName
-  initialProperties:nil
-      launchOptions:nil];
+                                                      moduleName:@"MyShareEx"
+                                               initialProperties:nil
+                                                   launchOptions:nil];
   rootView.backgroundColor = nil;
   return rootView;
 }
