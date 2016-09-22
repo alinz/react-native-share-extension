@@ -32,8 +32,6 @@ public class ShareExModule extends ReactContextBaseJavaModule implements Activit
 
     protected WritableMap processIntent() {
 
-        Log.i("KeptTest", "Data");
-
         Activity currentActivity = getCurrentActivity();
 
         WritableMap map = Arguments.createMap();
@@ -67,15 +65,12 @@ public class ShareExModule extends ReactContextBaseJavaModule implements Activit
     }
 
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        Log.i("Here","onActivityResult 1:");
     }
 
     public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        Log.i("here","onActivityResult 2:");
     }
 
     public void onNewIntent(Intent intent) {
-        Log.i("here","onNewIntent:");
 
     }
 }
