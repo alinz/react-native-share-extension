@@ -62,4 +62,6 @@ public class ShareExModule extends ReactContextBaseJavaModule implements Activit
 
         currentActivity.finish();
     }
+
+    public void onNewIntent(Intent intent) {  }
 }
