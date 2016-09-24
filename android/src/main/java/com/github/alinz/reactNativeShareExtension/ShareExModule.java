@@ -3,7 +3,6 @@ package com.github.alinz.reactNativeShareExtension;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
-
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -63,15 +62,4 @@ public class ShareExModule extends ReactContextBaseJavaModule implements Activit
 
         currentActivity.finish();
     }
-
-    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-    }
-
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    }
-
-    public void onNewIntent(Intent intent) {
-
-    }
 }
-
