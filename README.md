@@ -192,7 +192,7 @@ public class ShareActivity extends ReactActivity {
 // your package you defined in ShareActivity
 package com.sample1.share;
 // import build config
-import com.worbix.BuildConfig;
+import com.sample1.BuildConfig;
 
 import com.alinz.parkerdan.shareextension.SharePackage;
 
