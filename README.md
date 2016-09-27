@@ -328,7 +328,8 @@ so the `app.ios` and `app.android.js` refers to main app and `share.ios.js` and 
 
 # Share Extension APIs
 
-- `data()` is a function that returns a promise. once the promise is resolved, you get two values, `type` and `value`.
+- `data()` is a function that returns a promise. Once the promise is resolved, you get two values, `type` and `value`.
+
 
 ```js
 import ShareExtension from 'react-native-share-extension'
