@@ -246,7 +246,10 @@ public class ShareApplication extends Application implements ReactApplication {
    <intent-filter>
      <action android:name="android.intent.action.SEND" />
      <category android:name="android.intent.category.DEFAULT" />
+    //  for sharing links include
      <data android:mimeType="text/plain" />
+    //  for sharing photos include
+    <data android:mimeType="image/*" />
    </intent-filter>
 </activity>
 ```
