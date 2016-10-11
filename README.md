@@ -163,25 +163,71 @@ dependencies {
 }
 ```
 
-- create a package called `share` under your java project and create a new Java class. in my case I call it `MyShareActivity.java`. then paste the following code there.
+- create a folder called `share` under your java project and create two files. Call them `ShareActivity.java` and `ShareApplication.java`....just like your main project.
+
+- ShareActivity should look like this
 
 ```java
+// define your share project, if your main project is com.sample1, then com.sample1.share makes sense....
 package com.sample1.share;
 
-import com.github.alinz.reactNativeShareExtension.ShareExActivity;
-import com.sample1.BuildConfig;
+
+// import ReactActivity
+import com.facebook.react.ReactActivity;
 
 
-public class MyShareActivity extends ShareExActivity {
+public class ShareActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
+      // this is the name AppRegistry will use to launch the Share View
         return "MyShareEx";
     }
 
-    @Override
-    protected boolean getUseDeveloperSupport() {
-        return BuildConfig.DEBUG;
-    }
+}
+```
+
+- ShareApplication should look like this
+
+```java
+// your package you defined in ShareActivity
+package com.sample1.share;
+// import build config
+import com.sample1.BuildConfig;
+
+import com.alinz.parkerdan.shareextension.SharePackage;
+
+import android.app.Application;
+
+import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactPackage;
+
+import java.util.Arrays;
+import java.util.List;
+
+
+public class ShareApplication extends Application implements ReactApplication {
+ private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+   @Override
+   protected boolean getUseDeveloperSupport() {
+     return BuildConfig.DEBUG;
+
+   }
+
+   @Override
+   protected List<ReactPackage> getPackages() {
+     return Arrays.<ReactPackage>asList(
+         new MainReactPackage(),
+         new SharePackage()
+     );
+   }
+ };
+
+ @Override
+ public ReactNativeHost getReactNativeHost() {
+     return mReactNativeHost;
+ }
 }
 ```
 
@@ -192,7 +238,7 @@ public class MyShareActivity extends ShareExActivity {
 
 <activity
     android:noHistory="true"
-    android:name=".share.MyShareActivity"
+    android:name=".share.ShareActivity"
     android:configChanges="orientation"
     android:label="@string/title_activity_share"
     android:screenOrientation="portrait"
@@ -200,7 +246,10 @@ public class MyShareActivity extends ShareExActivity {
    <intent-filter>
      <action android:name="android.intent.action.SEND" />
      <category android:name="android.intent.category.DEFAULT" />
+    //  for sharing links include
      <data android:mimeType="text/plain" />
+    //  for sharing photos include
+    <data android:mimeType="image/*" />
    </intent-filter>
 </activity>
 ```
@@ -279,7 +328,8 @@ so the `app.ios` and `app.android.js` refers to main app and `share.ios.js` and 
 
 # Share Extension APIs
 
-- `data()` is a function that returns a promise. once the promise is resolved, you get two values, `type` and `value`.
+- `data()` is a function that returns a promise. Once the promise is resolved, you get two values, `type` and `value`.
+
 
 ```js
 import ShareExtension from 'react-native-share-extension'
