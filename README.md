@@ -233,7 +233,8 @@ public class ShareApplication extends Application implements ReactApplication {
 
 - MainApplication should look like this
 ```java
-package com.shareextension;
+// your package you defined in ShareActivity
+package com.sample1;
 
 import android.app.Application;
 import android.util.Log;
