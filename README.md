@@ -231,6 +231,48 @@ public class ShareApplication extends Application implements ReactApplication {
 }
 ```
 
+- MainApplication should look like this
+```java
+package com.shareextension;
+
+import android.app.Application;
+import android.util.Log;
+
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
+import com.facebook.react.shell.MainReactPackage;
+
+import com.alinz.parkerdan.shareextension.SharePackage;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class MainApplication extends Application implements ReactApplication {
+
+  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+    @Override
+    protected boolean getUseDeveloperSupport() {
+      return BuildConfig.DEBUG;
+    }
+
+    @Override
+    protected List<ReactPackage> getPackages() {
+      return Arrays.<ReactPackage>asList(
+          new MainReactPackage(),
+          new SharePackage()
+      );
+    }
+  };
+
+  @Override
+  public ReactNativeHost getReactNativeHost() {
+      return mReactNativeHost;
+  }
+}
+```
+
 - edit `android/app/src/main/AndroidMainfest.xml` and add the new `activity` right after `devSettingActivity`.
 
 ```xml
