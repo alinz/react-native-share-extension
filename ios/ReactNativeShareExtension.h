@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "RCTBridgeModule.h"
+#import "React/RCTBridgeModule.h"
 
 @interface ReactNativeShareExtension : UIViewController<RCTBridgeModule>
 - (UIView*) shareView;

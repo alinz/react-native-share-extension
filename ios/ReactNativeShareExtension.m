@@ -1,5 +1,5 @@
 #import "ReactNativeShareExtension.h"
-#import <RCTRootView.h>
+#import "React/RCTRootView.h"
 
 #define ITEM_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
