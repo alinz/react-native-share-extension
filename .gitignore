@@ -2,3 +2,6 @@
 *.iml
 .tags
 .tags1
+
+# Ignore use project configurations
+*xcuserdatad

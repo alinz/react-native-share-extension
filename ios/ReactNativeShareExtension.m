@@ -19,18 +19,18 @@ NSExtensionContext* extensionContext;
 RCT_EXPORT_MODULE();
 
 - (void)viewDidLoad {
- [super viewDidLoad];
-
- //object variable for extension doesn't work for react-native. It must be assign to gloabl
- //variable extensionContext. in this way, both exported method can touch extensionContext
- extensionContext = self.extensionContext;
-
- UIView *rootView = [self shareView];
- if (rootView.backgroundColor == nil) {
-   rootView.backgroundColor = [[UIColor alloc] initWithRed:1 green:1 blue:1 alpha:0.1];
- }
-
- self.view = rootView;
+  [super viewDidLoad];
+  
+  //object variable for extension doesn't work for react-native. It must be assign to gloabl
+  //variable extensionContext. in this way, both exported method can touch extensionContext
+  extensionContext = self.extensionContext;
+  
+  UIView *rootView = [self shareView];
+  if (rootView.backgroundColor == nil) {
+    rootView.backgroundColor = [[UIColor alloc] initWithRed:1 green:1 blue:1 alpha:0.1];
+  }
+  
+  self.view = rootView;
 }
 
 
@@ -42,66 +42,82 @@ RCT_EXPORT_METHOD(close) {
 
 
 RCT_REMAP_METHOD(data,
-                resolver:(RCTPromiseResolveBlock)resolve
-                rejecter:(RCTPromiseRejectBlock)reject)
+                 resolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject)
 {
- [self extractDataFromContext: extensionContext withCallback:^(NSURL* url,NSString* contentType ,NSException* err) {
-   NSDictionary *inventory = @{
-     @"type": contentType,
-     @"value": [url absoluteString]
-   };
-
-   resolve(inventory);
- }];
+  [self extractDataFromContext: extensionContext withCallback:^(NSDictionary *inventory ,NSException* err) {
+    resolve(inventory);
+  }];
 }
 
-- (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSURL *url, NSString* contentType ,NSException *exception))callback {
+- (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSDictionary *dict, NSException *exception))callback {
  @try {
    NSExtensionItem *item = [context.inputItems firstObject];
    NSArray *attachments = item.attachments;
    __block NSItemProvider *urlProvider = nil;
    __block NSItemProvider *imageProvider = nil;
+   
    [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
      if([provider hasItemConformingToTypeIdentifier:ITEM_IDENTIFIER]) {
        urlProvider = provider;
        *stop = YES;
-     }else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
-         imageProvider = provider;
-         *stop = YES;
-
+     }
+     else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]) {
+       imageProvider = provider;
+       *stop = YES;
      }
    }];
+     
+   if (!callback) {
+     return;
+   }
 
    if(urlProvider) {
      [urlProvider loadItemForTypeIdentifier:ITEM_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
        NSURL *url = (NSURL *)item;
-
-       if(callback) {
-         callback(url,@"text/plain" ,nil);
-       }
+       callback([self createTypeValuePair:url contentType:@"text/plain"], nil);
      }];
-   }else if (imageProvider){
+   }
+   else if (imageProvider){
        [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-           NSURL *url = (NSURL *)item;
-
-           if(callback) {
-               callback(url,[[[url absoluteString] pathExtension] lowercaseString] ,nil);
-           }
+         callback([self createImageDataObject:item], nil);
        }];
-
-
    }
    else {
-     if(callback) {
-       callback(nil, nil,[NSException exceptionWithName:@"Error" reason:@"couldn't find provider" userInfo:nil]);
-     }
+     callback(nil, [NSException exceptionWithName:@"Error" reason:@"Couldn't find provider" userInfo:nil]);
    }
  }
  @catch (NSException *exception) {
-   if(callback) {
-     callback(nil,nil ,exception);
-   }
+   callback(nil, exception);
  }
+}
+
+
+- (NSDictionary*) createTypeValuePair:(NSURL*) url
+                          contentType:(NSString*) contentType
+{
+  return @{
+           @"type": contentType,
+           @"value": [url absoluteString]
+           };
+}
+
+- (NSDictionary*) createImageDataObject:(NSURL*) url
+{
+  NSData *imageData = [NSData dataWithContentsOfURL:url];
+  UIImage *image = [UIImage imageWithData:imageData];
+  
+  return @{
+           @"type": [[[url absoluteString] pathExtension] lowercaseString],
+           @"value": [url absoluteString],
+           @"name": [[url absoluteString] lastPathComponent],
+           @"image": @{
+               @"size": @{
+                   @"height": [NSNumber numberWithFloat:image.size.height],
+                   @"width": [NSNumber numberWithFloat:image.size.width]
+                   }
+               }
+           };
 }
 
 @end
