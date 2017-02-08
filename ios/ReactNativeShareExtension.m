@@ -39,6 +39,10 @@ RCT_EXPORT_METHOD(close) {
                                completionHandler:nil];
 }
 
+RCT_EXPORT_METHOD(clear) {
+ // Method irrelevant for iOS.
+}
+
 
 
 RCT_REMAP_METHOD(data,
