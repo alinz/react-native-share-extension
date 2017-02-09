@@ -381,9 +381,31 @@ import ShareExtension from 'react-native-share-extension'
 const { type, value } = await ShareExtension.data()
 ```
 
+For shared image, the return object will have additional data:
+```js
+{
+    type: '...',
+    value: '...',
+    
+    // Additional data for an image.
+    name: 'file_name.png',
+    image: {
+        size: {
+            height: [Image height in pixels],
+            width: [Image width in pixels]
+        }
+    }
+}
+```
+
+
 - `close()`
 
 it simply close the share extension and return the touch event back to application that triggers the share.
+
+- `clear()` android only function. If called, data() will return empty result.
+
+
 
 # Test on Device without dev-server
 
