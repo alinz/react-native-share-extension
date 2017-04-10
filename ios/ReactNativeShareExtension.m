@@ -39,69 +39,94 @@ RCT_EXPORT_METHOD(close) {
                                completionHandler:nil];
 }
 
-
-
 RCT_REMAP_METHOD(data,
                 resolver:(RCTPromiseResolveBlock)resolve
                 rejecter:(RCTPromiseRejectBlock)reject)
 {
- [self extractDataFromContext: extensionContext withCallback:^(NSURL* url,NSString* contentType ,NSException* err) {
-   NSDictionary *inventory = @{
-     @"type": contentType,
-     @"value": [url absoluteString]
-   };
-
-   resolve(inventory);
- }];
+  [self extractDataFromContext: extensionContext withCallback:^(NSArray* items ,NSException* err) {
+    if (items == nil) {
+      resolve(nil);
+      return;
+    }
+    resolve(items[0]);
+  }];
 }
 
-- (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSURL *url, NSString* contentType ,NSException *exception))callback {
- @try {
-   NSExtensionItem *item = [context.inputItems firstObject];
-   NSArray *attachments = item.attachments;
-   __block NSItemProvider *urlProvider = nil;
-   __block NSItemProvider *imageProvider = nil;
-   [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
-     if([provider hasItemConformingToTypeIdentifier:ITEM_IDENTIFIER]) {
-       urlProvider = provider;
-       *stop = YES;
-     }else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
-         imageProvider = provider;
-         *stop = YES;
+RCT_REMAP_METHOD(dataMulti,
+                 resolverMulti:(RCTPromiseResolveBlock)resolve
+                 rejecterMulti:(RCTPromiseRejectBlock)reject)
+{
+  [self extractDataFromContext: extensionContext withCallback:^(NSArray* items ,NSException* err) {
+    resolve(items);
+  }];
+}
 
-     }
-   }];
+typedef void (^ProviderCallback)(NSURL *url, NSString *contentType, NSException *exception);
 
-   if(urlProvider) {
-     [urlProvider loadItemForTypeIdentifier:ITEM_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-       NSURL *url = (NSURL *)item;
+- (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSArray *items ,NSException *exception))callback {
+  @try {
+    NSExtensionItem *item = [context.inputItems firstObject];
+    NSArray *attachments = item.attachments;
+    NSMutableArray *items = [[NSMutableArray alloc] init];
+     
+    __block int attachmentIdx = 0;
+    __block ProviderCallback providerCb = nil;
+    providerCb = ^ void (NSURL *url, NSString *contentType, NSException *exception) {
+      if (exception) {
+        callback(nil, exception);
+        return;
+      }
+    
+      [items addObject:@{
+                        @"type": contentType,
+                        @"value": [url absoluteString]
+                        }];
 
-       if(callback) {
-         callback(url,@"text/plain" ,nil);
-       }
-     }];
-   }else if (imageProvider){
-       [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-           NSURL *url = (NSURL *)item;
+      ++attachmentIdx;
+      if (attachmentIdx == [attachments count]) {
+        callback(items, nil);
+      } else {
+        [self extractDataFromProvider:attachments[attachmentIdx] withCallback: providerCb];
+      }
+    };
+    [self extractDataFromProvider:attachments[0] withCallback: providerCb];
+  }
+  @catch (NSException *exception) {
+    callback(nil,exception);
+  }
+}
 
-           if(callback) {
-               callback(url,[[[url absoluteString] pathExtension] lowercaseString] ,nil);
-           }
-       }];
-
-
-   }
-   else {
-     if(callback) {
-       callback(nil, nil,[NSException exceptionWithName:@"Error" reason:@"couldn't find provider" userInfo:nil]);
-     }
-   }
- }
- @catch (NSException *exception) {
-   if(callback) {
-     callback(nil,nil ,exception);
-   }
- }
+- (void)extractDataFromProvider:(NSItemProvider *)provider withCallback:(void(^)(NSURL* url, NSString* contentType ,NSException *exception))callback {
+  NSItemProvider *urlProvider = nil;
+  NSItemProvider *imageProvider = nil;
+    
+  if([provider hasItemConformingToTypeIdentifier:ITEM_IDENTIFIER]) {
+    urlProvider = provider;
+  }else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
+    imageProvider = provider;
+  }
+    
+  if(urlProvider) {
+    [urlProvider loadItemForTypeIdentifier:ITEM_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+      NSURL *url = (NSURL *)item;
+        
+      if(callback) {
+        callback(url,@"text/plain" ,nil);
+      }
+    }];
+  }else if (imageProvider){
+    [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+      NSURL *url = (NSURL *)item;
+        
+      if(callback) {
+        callback(url,[[[url absoluteString] pathExtension] lowercaseString] ,nil);
+      }
+    }];
+  } else {
+    if(callback) {
+      callback(nil, nil,[NSException exceptionWithName:@"Error" reason:@"couldn't find provider" userInfo:nil]);
+    }
+  }
 }
 
 @end
