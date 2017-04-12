@@ -28,6 +28,18 @@ public class ShareModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void clear() {
+    Activity currentActivity = getCurrentActivity();
+    
+    if (currentActivity != null) {
+      Intent intent = currentActivity.getIntent();
+      intent.setAction("");
+      intent.removeExtra(Intent.EXTRA_TEXT);
+      intent.removeExtra(Intent.EXTRA_STREAM);
+    }
+  }
+
+  @ReactMethod
   public void close() {
     getCurrentActivity().finish();
   }
