@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.Arguments;
 
 import android.app.Activity;
@@ -13,6 +14,7 @@ import android.net.Uri;
 
 import android.graphics.Bitmap;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 
 public class ShareModule extends ReactContextBaseJavaModule {
@@ -51,8 +53,9 @@ public class ShareModule extends ReactContextBaseJavaModule {
 
   public WritableMap processIntent() {
       WritableMap map = Arguments.createMap();
+      WritableArray images = Arguments.createArray();
 
-      String value = "";
+      String text = "";
       String type = "";
       String action = "";
 
@@ -65,23 +68,23 @@ public class ShareModule extends ReactContextBaseJavaModule {
         if (type == null) {
           type = "";
         }
-        if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
-          value = intent.getStringExtra(Intent.EXTRA_TEXT);
-        }
-	else if (Intent.ACTION_SEND.equals(action) && type.startsWith("image")) {
-          Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-         value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
 
-       } else {
-         value = "";
-       }
-      } else {
-        value = "";
-        type = "";
-      }
+        if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
+          text = intent.getStringExtra(Intent.EXTRA_TEXT);
+        } else if (Intent.ACTION_SEND.equals(action) && type.startsWith("image")) {
+          Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+          images.pushString("file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri));
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type.startsWith("image")) {
+          ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+          for (Uri uri : uris) {
+              images.pushString("file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri));
+          }
+        } 
+      } 
 
       map.putString("type", type);
-      map.putString("value",value);
+      map.putString("text", text);
+      map.putArray("images", images);
 
       return map;
   }
