@@ -73,6 +73,7 @@ public class RealPathUtil {
 
          String path = getDataColumn(context, uri, null, null);
          
+         if (path != null) return path;
          // Try save to tmp file, and return tmp file path
          return getPathFromSavingTempFile(context, uri);
      }
