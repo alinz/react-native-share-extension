@@ -288,6 +288,7 @@ public class MainApplication extends Application implements ReactApplication {
     android:theme="@style/Theme.Share.Transparent" >
    <intent-filter>
      <action android:name="android.intent.action.SEND" />
+     <action android:name="android.intent.action.SEND_MULTIPLE" />
      <category android:name="android.intent.category.DEFAULT" />
     //  for sharing links include
      <data android:mimeType="text/plain" />
