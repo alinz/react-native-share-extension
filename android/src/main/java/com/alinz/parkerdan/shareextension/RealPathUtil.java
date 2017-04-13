@@ -9,6 +9,10 @@ import android.provider.MediaStore;
 import android.content.ContentUris;
 import android.os.Environment;
 
+import android.os.ParcelFileDescriptor;
+import java.io.*;
+import java.nio.channels.FileChannel;
+
 public class RealPathUtil {
  public static String getRealPathFromURI(final Context context, final Uri uri) {
 
@@ -67,7 +71,10 @@ public class RealPathUtil {
          if (isGooglePhotosUri(uri))
              return uri.getLastPathSegment();
 
-         return getDataColumn(context, uri, null, null);
+         String path = getDataColumn(context, uri, null, null);
+         
+         // Try save to tmp file, and return tmp file path
+         return getPathFromSavingTempFile(context, uri);
      }
      // File
      else if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -75,6 +82,25 @@ public class RealPathUtil {
      }
 
      return null;
+ }
+
+ public static String getPathFromSavingTempFile(Context context, final Uri uri) {
+     File tmpFile;
+     try {
+        String fileName = uri.getLastPathSegment();
+        tmpFile = File.createTempFile(fileName, null, context.getCacheDir());
+
+        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+
+        FileChannel src = new FileInputStream(pfd.getFileDescriptor()).getChannel();
+        FileChannel dst = new FileOutputStream(tmpFile).getChannel();
+        dst.transferFrom(src, 0, src.size());
+        src.close();
+        dst.close();
+    } catch (IOException ex) {
+        return null;
+    }
+    return tmpFile.getAbsolutePath();
  }
 
  /**
