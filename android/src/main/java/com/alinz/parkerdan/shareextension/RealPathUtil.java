@@ -88,7 +88,7 @@ public class RealPathUtil {
      File tmpFile;
      try {
         String fileName = uri.getLastPathSegment();
-        tmpFile = File.createTempFile(fileName, null, context.getCacheDir());
+        tmpFile = File.createTempFile(null, fileName, context.getCacheDir());
 
         ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
 
