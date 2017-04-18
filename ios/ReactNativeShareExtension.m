@@ -82,7 +82,6 @@ RCT_REMAP_METHOD(data,
         }];
 
         if(urlProvider) {
-            NSLog(@"RNShareExt - sharing url");
             [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
 
@@ -91,7 +90,6 @@ RCT_REMAP_METHOD(data,
                 }
             }];
         } else if (imageProvider) {
-            NSLog(@"RNShareExt - sharing image");
             [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
 
@@ -100,7 +98,6 @@ RCT_REMAP_METHOD(data,
                 }
             }];
         } else if (textProvider) {
-            NSLog(@"RNShareExt - sharing text");
             [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSString *text = (NSString *)item;
 
@@ -109,7 +106,6 @@ RCT_REMAP_METHOD(data,
                 }
             }];
         } else {
-            NSLog(@"RNShareExt - unknown type");
             if(callback) {
                 callback(nil, nil, [NSException exceptionWithName:@"Error" reason:@"couldn't find provider" userInfo:nil]);
             }
