@@ -2,3 +2,9 @@
 *.iml
 .tags
 .tags1
+
+# Ignore use project configurations
+*xcuserdatad
+
+# Ignore IDE folders
+.idea
