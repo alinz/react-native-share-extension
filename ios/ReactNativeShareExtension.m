@@ -1,5 +1,6 @@
 #import "ReactNativeShareExtension.h"
 #import <React/RCTRootView.h>
+#import <ImageIO/ImageIO.h>
 
 #define ITEM_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
@@ -15,6 +16,7 @@ NSExtensionContext* extensionContext;
 - (UIView*) shareView {
  return nil;
 }
+
 
 RCT_EXPORT_MODULE();
 
@@ -43,8 +45,6 @@ RCT_EXPORT_METHOD(clear) {
  // Method irrelevant for iOS.
 }
 
-
-
 RCT_REMAP_METHOD(data,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
@@ -53,6 +53,7 @@ RCT_REMAP_METHOD(data,
     resolve(inventory);
   }];
 }
+
 
 - (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSDictionary *dict, NSException *exception))callback {
  @try {
@@ -108,8 +109,24 @@ RCT_REMAP_METHOD(data,
 
 - (NSDictionary*) createImageDataObject:(NSURL*) url
 {
-  NSData *imageData = [NSData dataWithContentsOfURL:url];
-  UIImage *image = [UIImage imageWithData:imageData];
+  NSNumber* width;
+  NSNumber* height;
+  
+  CGImageSourceRef imageSource = CGImageSourceCreateWithURL((CFURLRef)url, NULL);
+  
+  @try {
+    CFDictionaryRef imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, NULL);
+    
+    CFNumberRef pixelWidthRef  = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelWidth);
+    CFNumberRef pixelHeightRef = CFDictionaryGetValue(imageProperties, kCGImagePropertyPixelHeight);
+    
+    width = (__bridge NSNumber*)pixelWidthRef;
+    height = (__bridge NSNumber*)pixelHeightRef;
+  } @finally {
+    if (imageSource != NULL) {
+      CFRelease(imageSource);
+    }
+  }
   
   return @{
            @"type": [[[url absoluteString] pathExtension] lowercaseString],
@@ -117,8 +134,8 @@ RCT_REMAP_METHOD(data,
            @"name": [[url absoluteString] lastPathComponent],
            @"image": @{
                @"size": @{
-                   @"height": [NSNumber numberWithFloat:image.size.height],
-                   @"width": [NSNumber numberWithFloat:image.size.width]
+                   @"height": height,
+                   @"width": width
                    }
                }
            };
