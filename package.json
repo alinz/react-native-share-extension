@@ -1,28 +1,92 @@
 {
-  "name": "react-native-share-extension",
-  "version": "1.1.1",
-  "description": "share extension using react-native for both ios and android",
-  "main": "lib/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:alinz/react-native-share-extension.git"
-  },
-  "keywords": [
-    "react-component",
-    "react-native",
-    "share-extension"
+  "_args": [
+    [
+      {
+        "raw": "react-native-share-extension",
+        "scope": null,
+        "escapedName": "react-native-share-extension",
+        "name": "react-native-share-extension",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/mark/code/PresentMobile"
+    ]
   ],
+  "_from": "react-native-share-extension@latest",
+  "_id": "react-native-share-extension@1.1.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/react-native-share-extension",
+  "_nodeVersion": "6.9.1",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/react-native-share-extension-1.1.1.tgz_1483985855792_0.05685301055200398"
+  },
+  "_npmUser": {
+    "name": "alinz",
+    "email": "a.najafizadeh@gmail.com"
+  },
+  "_npmVersion": "3.10.8",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "react-native-share-extension",
+    "scope": null,
+    "escapedName": "react-native-share-extension",
+    "name": "react-native-share-extension",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/react-native-share-extension/-/react-native-share-extension-1.1.1.tgz",
+  "_shasum": "da2c4758c8a800c2241e797deb90298b5388053c",
+  "_shrinkwrap": null,
+  "_spec": "react-native-share-extension",
+  "_where": "/Users/mark/code/PresentMobile",
   "author": {
     "name": "Ali Najafizadeh",
     "email": "a.najafizadeh@gmail.com",
     "url": "http://github.com/alinz"
   },
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/alinz/react-native-share-extension"
   },
-  "homepage": "https://github.com/alinz/react-native-share-extension"
+  "dependencies": {},
+  "description": "share extension using react-native for both ios and android",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "da2c4758c8a800c2241e797deb90298b5388053c",
+    "tarball": "https://registry.npmjs.org/react-native-share-extension/-/react-native-share-extension-1.1.1.tgz"
+  },
+  "gitHead": "66d3a720cda1a032aaea2d4609a7f427c252a2b2",
+  "homepage": "https://github.com/alinz/react-native-share-extension",
+  "keywords": [
+    "react-component",
+    "react-native",
+    "share-extension"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "maintainers": [
+    {
+      "name": "alinz",
+      "email": "a.najafizadeh@gmail.com"
+    }
+  ],
+  "name": "react-native-share-extension",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/alinz/react-native-share-extension.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.1.1"
 }
