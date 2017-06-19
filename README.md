@@ -52,7 +52,7 @@ the setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_05.png" />
 </p>
 
-- make sure the type of that object is `Objective-c File` and name it `MyShareEx.m`
+- make sure the type of that object is `Objective-c File`, e.g. for `MyShareEx` name it `MyShareEx.m`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_06.png" />
@@ -62,7 +62,7 @@ the setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_07.png" />
 </p>
 
-- since we deleted `ShareViewController.m`, we need to tell the storyboard of your share extension where the view needs to be loaded. So click on `MainInterface.storyboard` and replace the class field from `ShareViewController` to `MyShareEx`
+- since we deleted `ShareViewController.m`, we need to tell the storyboard of your share extension where the view needs to be loaded. So click on `MainInterface.storyboard` and replace the class field from `ShareViewController` to whatever you chose above (in my case `MyShareEx`)
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_08.png" />
@@ -80,7 +80,7 @@ the setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_10.png" />
 </p>
 
-- now we need to tell the share extension that we want to read new header files. click on project name, in my case `Sample1` then click on `MyShareEx`. After that click on Build Settings and search for `Header Search Paths`
+- now we need to tell the share extension that we want to read new header files. click on project name, in my case `Sample1` then click on your extension name (in my case `MyShareEx`). After that click on Build Settings and search for `Header Search Paths`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_11.png" />
@@ -104,13 +104,13 @@ the setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_14.png" />
 </p>
 
-- we need to modify `MyShareEx/Info.plist` to make sure that our share extension can connect to ineternet. This is useful if you need your share extension connects to your api server or react-native remote server dev. For doing that we need to `App Transport Security Settings` to `Info.plist`
+- we need to modify the `Info.plist` inside the extension (e.g. `MyShareEx/Info.plist`) to make sure that our share extension can connect to internet. This is useful if you need your share extension connects to your api server or react-native remote server dev. For doing that we need to `App Transport Security Settings` to `Info.plist`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_15.png" />
 </p>
 
-- now go back to `MyShareEx.m` and paste the following code there.
+- now go back to your extension file (in my case `MyShareEx.m`) and paste the following code there **being sure to substitute `MyShareEx` in all three places for whatever you chose above**
 
 ```objective-c
 #import <Foundation/Foundation.h>
@@ -339,7 +339,7 @@ and in `values/styles.xml`
 
 so both share extension and main application are using the same code base, or same main.jsbundle file. So the trick to separate Share and Main App is registering 2 different Component entries with `AppRegistry.registerComponent`.
 
-so in both iOS and android share extension we are telling react to load `MyShareEx` component from js.
+so in both iOS and android share extension we are telling react to load the extension component (in my case `MyShareEx`) from js.
 
 so in `index.ios.js` and `index.android.js` we are writing the same code as
 
@@ -352,7 +352,7 @@ import App from './app.android'
 import Share from './share.android'
 
 AppRegistry.registerComponent('Sample1', () => App)
-AppRegistry.registerComponent('MyShareEx', () => Share)
+AppRegistry.registerComponent('MyShareEx', () => Share) // TODO: Replace MyShareEx with my extension name
 ```
 
 ```js
@@ -364,7 +364,7 @@ import App from './app.ios'
 import Share from './share.ios'
 
 AppRegistry.registerComponent('Sample1', () => App)
-AppRegistry.registerComponent('MyShareEx', () => Share)
+AppRegistry.registerComponent('MyShareEx', () => Share) // TODO: Replace MyShareEx with my extension name
 ```
 
 so the `app.ios` and `app.android.js` refers to main app and `share.ios.js` and `share.android.js` refers to share extension.
