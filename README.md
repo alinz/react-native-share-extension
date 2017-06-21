@@ -402,6 +402,29 @@ export NODE_BINARY=node
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_17.png" />
 </p>
 
+# On iOS: Set the NSExtensionActivationRule key in your Info.plist
+
+For the time being, this package only handles sharing of urls specifically from browsers. In order to tell the system to show your extension only when sharing a url, you must set the `NSExtensionActivationRule` key (under `NSExtensionAttributes`) in the share extension's Info.plist file as follows (this is also needed to pass Apple's reveiw):
+
+```
+<key>NSExtensionAttributes</key>
+<dict>
+  <key>NSExtensionActivationRule</key>
+  <dict>
+    <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+    <integer>1</integer>
+  </dict>
+</dict>
+```
+
+<p align="center">
+    <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/NSExtensionActivationRule.png" />
+</p>
+
+Note that while the above will prevent many apps from wrongly sharing using your extension, some apps (e.g., YouTube) will still allow sharing using your extension, which might cause your extension to crash. Check out [this issue](https://github.com/alinz/react-native-share-extension/issues/40) for details.
+
+For reference about `NSExtensionActivationRule` checkout [Apple's docs](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html#//apple_ref/doc/uid/TP40014214-CH21-SW8)
+
 # Final note
 
 I have used `react-native-modalbox` module to handle the showing and hiding share extension which makes the experience more enjoyable for the user.
