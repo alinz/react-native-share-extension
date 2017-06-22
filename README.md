@@ -115,8 +115,8 @@ the setup requires a little bit more work. I will try to describe as detail as p
 ```objective-c
 #import <Foundation/Foundation.h>
 #import "ReactNativeShareExtension.h"
-#import "RCTBundleURLProvider.h"
-#import "RCTRootView.h"
+#import "React/RCTBundleURLProvider.h"
+#import "React/RCTRootView.h"
 
 @interface MyShareEx : ReactNativeShareExtension
 @end
