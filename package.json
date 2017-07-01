@@ -1,6 +1,6 @@
 {
   "name": "react-native-share-extension",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "share extension using react-native for both ios and android",
   "main": "lib/index.js",
   "scripts": {
@@ -10,11 +10,7 @@
     "type": "git",
     "url": "git@github.com:alinz/react-native-share-extension.git"
   },
-  "keywords": [
-    "react-component",
-    "react-native",
-    "share-extension"
-  ],
+  "keywords": ["react-component", "react-native", "share-extension"],
   "author": {
     "name": "Ali Najafizadeh",
     "email": "a.najafizadeh@gmail.com",
