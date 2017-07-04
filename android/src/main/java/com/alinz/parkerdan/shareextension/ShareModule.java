@@ -11,9 +11,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 
+
 import android.graphics.Bitmap;
 import java.io.InputStream;
-
+import java.util.HashSet;
+import java.util.Set;
 
 public class ShareModule extends ReactContextBaseJavaModule {
 
@@ -39,10 +41,15 @@ public class ShareModule extends ReactContextBaseJavaModule {
 
   public WritableMap processIntent() {
       WritableMap map = Arguments.createMap();
+      Set<String> mediaTypesSupported = new HashSet<String>();
+      mediaTypesSupported.add("video");
+      mediaTypesSupported.add("audio");
+      mediaTypesSupported.add("image");
 
       String value = "";
       String type = "";
       String action = "";
+      String typePart = "";
 
       Activity currentActivity = getCurrentActivity();
 
@@ -52,11 +59,13 @@ public class ShareModule extends ReactContextBaseJavaModule {
         type = intent.getType();
         if (type == null) {
           type = "";
+        } else {
+          typePart = type.substring(0, type.indexOf('/'));
         }
         if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
           value = intent.getStringExtra(Intent.EXTRA_TEXT);
         }
-        else if (Intent.ACTION_SEND.equals(action) && ("image/*".equals(type) || "image/jpeg".equals(type) || "image/png".equals(type) || "image/jpg".equals(type) ) ) {
+        else if (Intent.ACTION_SEND.equals(action) && (mediaTypesSupported.contains(typePart)) ) {
           Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
          value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
 
