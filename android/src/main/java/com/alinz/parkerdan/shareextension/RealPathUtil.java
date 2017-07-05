@@ -9,6 +9,10 @@ import android.provider.MediaStore;
 import android.content.ContentUris;
 import android.os.Environment;
 
+import android.os.ParcelFileDescriptor;
+import java.io.*;
+import java.nio.channels.FileChannel;
+
 public class RealPathUtil {
  public static String getRealPathFromURI(final Context context, final Uri uri) {
 
@@ -66,8 +70,12 @@ public class RealPathUtil {
          // Return the remote address
          if (isGooglePhotosUri(uri))
              return uri.getLastPathSegment();
+         // try catch if no _data column in contentProvider
+         String path = getDataColumn(context, uri, null, null);
+         if (path != null) return path;
 
-         return getDataColumn(context, uri, null, null);
+             // Try save to tmp file, and return tmp file path
+         return getPathFromSavingTempFile(context, uri);
      }
      // File
      else if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -75,6 +83,25 @@ public class RealPathUtil {
      }
 
      return null;
+ }
+
+ public static String getPathFromSavingTempFile(Context context, final Uri uri) {
+     File tmpFile;
+     try {
+        String fileName = uri.getLastPathSegment();
+        tmpFile = File.createTempFile("tmp", fileName, context.getCacheDir());
+
+        ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+
+        FileChannel src = new FileInputStream(pfd.getFileDescriptor()).getChannel();
+        FileChannel dst = new FileOutputStream(tmpFile).getChannel();
+        dst.transferFrom(src, 0, src.size());
+        src.close();
+        dst.close();
+    } catch (IOException ex) {
+        return null;
+    }
+    return tmpFile.getAbsolutePath();
  }
 
  /**
@@ -103,6 +130,8 @@ public class RealPathUtil {
              final int index = cursor.getColumnIndexOrThrow(column);
              return cursor.getString(index);
          }
+     } catch (Exception e) {
+         return null;
      } finally {
          if (cursor != null)
              cursor.close();
