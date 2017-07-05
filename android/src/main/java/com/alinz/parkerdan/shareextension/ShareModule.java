@@ -5,17 +5,18 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.Arguments;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-
-
 import android.graphics.Bitmap;
+
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
 
 public class ShareModule extends ReactContextBaseJavaModule {
 
@@ -39,14 +40,13 @@ public class ShareModule extends ReactContextBaseJavaModule {
       promise.resolve(processIntent());
   }
 
-  public WritableMap processIntent() {
-      WritableMap map = Arguments.createMap();
+  public WritableArray processIntent() {
+      WritableArray dataArrayMap = Arguments.createArray();
       Set<String> mediaTypesSupported = new HashSet<String>();
       mediaTypesSupported.add("video");
       mediaTypesSupported.add("audio");
       mediaTypesSupported.add("image");
 
-      String value = "";
       String type = "";
       String action = "";
       String typePart = "";
@@ -63,23 +63,28 @@ public class ShareModule extends ReactContextBaseJavaModule {
           typePart = type.substring(0, type.indexOf('/'));
         }
         if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
-          value = intent.getStringExtra(Intent.EXTRA_TEXT);
+          WritableMap dataMap = Arguments.createMap();
+          dataMap.putString("type", type);
+          dataMap.putString("value", intent.getStringExtra(Intent.EXTRA_TEXT));
+          dataArrayMap.pushMap(dataMap);
         }
-        else if (Intent.ACTION_SEND.equals(action) && (mediaTypesSupported.contains(typePart)) ) {
+        else if (Intent.ACTION_SEND.equals(action) && (
+          mediaTypesSupported.contains(typePart)) ) {
+          WritableMap dataMap = Arguments.createMap();
+          dataMap.putString("type", type);
           Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-         value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
-
-       } else {
-         value = "";
-       }
-      } else {
-        value = "";
-        type = "";
+          dataMap.putString("value", "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri));
+          dataArrayMap.pushMap(dataMap);
+        } else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && mediaTypesSupported.contains(typePart)) {
+            ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+            for (Uri uri : uris) {
+                WritableMap dataMap = Arguments.createMap();
+                dataMap.putString("type", type);
+                dataMap.putString("value", "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri));
+                dataArrayMap.pushMap(dataMap);
+            }
+        }
       }
-
-      map.putString("type", type);
-      map.putString("value",value);
-
-      return map;
+      return dataArrayMap;
   }
 }
