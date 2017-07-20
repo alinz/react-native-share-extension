@@ -60,6 +60,7 @@ RCT_REMAP_METHOD(data,
 }
 
 - (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSString *value, NSString* contentType, NSException *exception))callback {
+    
     @try {
         NSExtensionItem *item = [context.inputItems firstObject];
         NSArray *attachments = item.attachments;
@@ -91,10 +92,24 @@ RCT_REMAP_METHOD(data,
             }];
         } else if (imageProvider) {
             [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                NSURL *url = (NSURL *)item;
-
-                if(callback) {
-                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
+                
+                // Thanks to iOS 11's new Screenshot Editor, there is a chance id<NSSecureCoding> item will be a UIImage instead of a NSURL, therefore we need to handle both cases
+                if ([(NSObject *)item isKindOfClass:[UIImage class]]){
+                    // Cast the item to a UIImage and save into a temporary directory so we can pass a URL back to React Native
+                    UIImage *sharedImage = (UIImage *)item;
+                    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                    NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"RNSE_TEMP_IMG.png"];
+                    [UIImagePNGRepresentation(sharedImage) writeToFile: filePath atomically: YES];
+                    
+                    if(callback){
+                        callback(filePath, @"png", nil);
+                    }
+                    
+                }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
+                    NSURL* url = (NSURL *)item;
+                    if(callback) {
+                        callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
+                    }
                 }
             }];
         } else if (textProvider) {
