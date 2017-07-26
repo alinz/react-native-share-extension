@@ -99,10 +99,11 @@ RCT_REMAP_METHOD(data,
                     UIImage *sharedImage = (UIImage *)item;
                     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
                     NSString *filePath = [[paths objectAtIndex:0] stringByAppendingPathComponent:@"RNSE_TEMP_IMG.png"];
-                    [UIImagePNGRepresentation(sharedImage) writeToFile: filePath atomically: YES];
+                    NSString *fullPath = [NSString stringWithFormat:@"file://%@", filePath];
+                    [UIImagePNGRepresentation(sharedImage) writeToFile: fullPath atomically: YES];
                     
                     if(callback){
-                        callback(filePath, @"png", nil);
+                        callback(fullPath, @"png", nil);
                     }
                     
                 }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
