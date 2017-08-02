@@ -17,7 +17,6 @@ public class ShareExPackage implements ReactPackage {
         return Arrays.<NativeModule>asList(new ShareExModule(reactContext));
     }
 
-    @Override
     public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();
     }
