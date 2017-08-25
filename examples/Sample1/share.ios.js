@@ -9,7 +9,6 @@ import ShareExtension from 'react-native-share-extension'
 
 import {
   Text,
-  TextInput,
   View,
   TouchableOpacity
 } from 'react-native'
@@ -24,7 +23,7 @@ export default class Share extends Component {
     }
   }
 
-  async componentDidMount() {
+  async componentDidMount = () => {
     try {
       const { type, value } = await ShareExtension.data()
       this.setState({
@@ -36,30 +35,29 @@ export default class Share extends Component {
     }
   }
 
-  onClose() {
-    ShareExtension.close()
-  }
+  onClose = () => ShareExtension.close()
 
-  closing = () => {
-    this.setState({
-      isOpen: false
-    })
-  }
+  closing = () => this.setState({ isOpen: false });
 
   render() {
     return (
-      <Modal backdrop={false}
-             style={{ backgroundColor: 'transparent' }} position="center" isOpen={this.state.isOpen} onClosed={this.onClose}>
-          <View style={{ alignItems: 'center', justifyContent:'center', flex: 1 }}>
-            <View style={{ borderColor: 'green', borderWidth: 1, backgroundColor: 'white', height: 200, width: 300 }}>
-              <TouchableOpacity onPress={this.closing}>
-                <Text>Close</Text>
-                <Text>type: { this.state.type }</Text>
-                <Text>value: { this.state.value }</Text>
-              </TouchableOpacity>
-            </View>
+      <Modal
+        backdrop={false}
+        style={{ backgroundColor: 'transparent' }}
+        position="center"
+        isOpen={this.state.isOpen}
+        onClosed={this.onClose}
+      >
+        <View style={{ alignItems: 'center', justifyContent:'center', flex: 1 }}>
+          <View style={{ borderColor: 'green', borderWidth: 1, backgroundColor: 'white', height: 200, width: 300 }}>
+            <TouchableOpacity onPress={this.closing}>
+              <Text>Close</Text>
+              <Text>type: { this.state.type }</Text>
+              <Text>value: { this.state.value }</Text>
+            </TouchableOpacity>
           </View>
+        </View>
       </Modal>
-    )
+    );
   }
 }
