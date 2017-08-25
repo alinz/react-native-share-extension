@@ -23,7 +23,7 @@ export default class Share extends Component {
     }
   }
 
-  async componentDidMount = () => {
+  async componentDidMount() {
     try {
       const { type, value } = await ShareExtension.data()
       this.setState({
