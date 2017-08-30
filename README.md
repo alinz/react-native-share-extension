@@ -425,6 +425,14 @@ Note that while the above will prevent many apps from wrongly sharing using your
 
 For reference about `NSExtensionActivationRule` checkout [Apple's docs](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html#//apple_ref/doc/uid/TP40014214-CH21-SW8)
 
+# Troubleshooting on iOS devices
+
+Using the iOS Simulator and remote react-native debugger to develop the extension can hide issues that won't appear until running on device. If you're experiencing issues running the extension on iOS devices, examine the device log for any obvious errors. In the absence of errors, make sure the Xcode target is set to debug mode (which will allow console.log statements to appear in the device log), then examine your JS code for initialization errors.
+
+1. If you're using react-native latest, error boundaries might help with JS errors. Another option is to catch render exceptions or test for errors, then render that output with something like a Text component. As long as your share app initializes, you should be able to see yellowbox/redbox errors. If you're not seeing them, you likely have an initialization issue.
+2. Disable bundling on the main target when debugging the extension target, it's not needed when you're not working with the main app.
+3. [Enable breaking on exceptions](http://blog.manbolo.com/2012/01/23/xcode-tips-1-break-on-exceptions). This is helpful if there are any exceptions in the extension itself; perhaps most useful if you've customized the native module.
+
 # Final note
 
 I have used `react-native-modalbox` module to handle the showing and hiding share extension which makes the experience more enjoyable for the user.
