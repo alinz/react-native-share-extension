@@ -9,7 +9,7 @@ This is a helper module which brings react native as an engine to drive share ex
 
 # Installation
 
-installation should be very easy by just installing it from npm.
+Installation should be very easy by just installing it from npm.
 
 ```js
 npm install react-native-share-extension --save
@@ -17,42 +17,42 @@ npm install react-native-share-extension --save
 
 # Setup
 
-the setup requires a little bit more work. I will try to describe as detail as possible. I would love to use `rnpm` so I will welcome pull request.
+The setup requires a little bit more work. I will try to describe as detail as possible. I would love to use `rnpm` so I will welcome pull request.
 
 ## iOS
 
-- click on your project's name
-- click on `+` sign
+- Click on your project's name
+- Click on `+` sign
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_01.png" />
 </p>
 
-- select `Share Extension` under `iOS > Application Extension`
+- Select `Share Extension` under `iOS > Application Extension`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_02.png" />
 </p>
 
-- select a name for your new share extension, in my case I chose `MyShareEx`
+- Select a name for your new share extension, in my case I chose `MyShareEx`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_03.png" />
 </p>
 
-- delete both `ShareViewController.h` and `ShareViewController.m`. make sure to click on `Move to Trash` button during deletion.
+- Delete both `ShareViewController.h` and `ShareViewController.m`. make sure to click on the `Move to Trash` button during deletion.
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_04.png" />
 </p>
 
-- create new file under your share extension group. in my case it was `MyShareEx`
+- Create a new file under your share extension group, in my case it was `MyShareEx`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_05.png" />
 </p>
 
-- make sure the type of that object is `Objective-c File`, e.g. for `MyShareEx` name it `MyShareEx.m`
+- Make sure that the type of that object is `Objective-C File`, e.g. for `MyShareEx` name it `MyShareEx.m`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_06.png" />
@@ -62,13 +62,13 @@ the setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_07.png" />
 </p>
 
-- since we deleted `ShareViewController.m`, we need to tell the storyboard of your share extension where the view needs to be loaded. So click on `MainInterface.storyboard` and replace the class field from `ShareViewController` to whatever you chose above (in my case `MyShareEx`)
+- Since we deleted `ShareViewController.m`, we need to tell the storyboard of your share extension where the view needs to be loaded. So click on `MainInterface.storyboard` and replace the class field from `ShareViewController` to whatever you chose above (in my case `MyShareEx`)
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_08.png" />
 </p>
 
-- now it's time to add our library. Right click on `Libraries` group and select `Add Files to "Sample1"...`
+- Now it's time to add our library. Right click on the `Libraries` group and select `Add Files to "Sample1"...`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_09.png" />
@@ -80,37 +80,37 @@ the setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_10.png" />
 </p>
 
-- now we need to tell the share extension that we want to read new header files. click on project name, in my case `Sample1` then click on your extension name (in my case `MyShareEx`). After that click on Build Settings and search for `Header Search Paths`
+- Now we need to tell the share extension that we want to read new header files. Click on project name (in my case `Sample1`), then click on your extension name (in my case `MyShareEx`). After that click on Build Settings and search for `Header Search Paths`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_11.png" />
 </p>
 
-- add the new path `$(SRCROOT)/../node_modules/react-native-share-extension/ios` with `recursive` selected.
+- Add the new path `$(SRCROOT)/../node_modules/react-native-share-extension/ios` with `recursive` selected
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_12.png" />
 </p>
 
-- we need to add some flags as well, so search for `Other Linker Flags` and add `-ObjC` and `-lc++`
+- We need to add some linker flags as well, so search for `Other Linker Flags` and add `-ObjC` and `-lc++`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_13.png" />
 </p>
 
-- we also need to add all the static libraries such as react and Share Extension. so select `General` tab and under `Linked frameworks and Libraries` click on `+` and add all of the selected static binaries there.
+- We also need to add all the static libraries such as `React` and `React Native Share Extension`. Select the `General` tab and under `Linked frameworks and Libraries` click on `+` and add all of the selected static binaries there
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_14.png" />
 </p>
 
-- we need to modify the `Info.plist` inside the extension (e.g. `MyShareEx/Info.plist`) to make sure that our share extension can connect to internet. This is useful if you need your share extension connects to your api server or react-native remote server dev. For doing that we need to `App Transport Security Settings` to `Info.plist`
+- We need to modify the `Info.plist` inside the extension (e.g. `MyShareEx/Info.plist`) to make sure that our share extension can connect to internet. This is useful if you need your share extension connects to your API server or react-native remote server dev. For doing that we need to `App Transport Security Settings` to `Info.plist`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_15.png" />
 </p>
 
-- now go back to your extension file (in my case `MyShareEx.m`) and paste the following code there **being sure to substitute `MyShareEx` in all three places for whatever you chose above**
+- Now go back to your extension file (in my case `MyShareEx.m`) and paste the following code there **being sure to substitute `MyShareEx` in all three places for whatever you chose above**
 
 ```objective-c
 #import <Foundation/Foundation.h>
@@ -146,11 +146,36 @@ RCT_EXPORT_MODULE();
 @end
 ```
 
-- now try to build the project. it should build successfully.
+# Set the NSExtensionActivationRule key in your Info.plist
+
+For the time being, this package only handles sharing of urls specifically from browsers. In order to tell the system to show your extension only when sharing a url, you must set the `NSExtensionActivationRule` key (under `NSExtensionAttributes`) in the share extension's Info.plist file as follows (this is also needed to pass Apple's reveiw):
+
+```
+<key>NSExtensionAttributes</key>
+<dict>
+  <key>NSExtensionActivationRule</key>
+  <dict>
+    <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+    <integer>1</integer>
+  </dict>
+</dict>
+```
+
+<p align="center">
+    <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/NSExtensionActivationRule.png" />
+</p>
+
+Note that while the above will prevent many apps from wrongly sharing using your extension, some apps (e.g., YouTube) will still allow sharing using your extension, which might cause your extension to crash. Check out [this issue](https://github.com/alinz/react-native-share-extension/issues/40) for details.
+
+For reference about `NSExtensionActivationRule` checkout [Apple's docs](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html#//apple_ref/doc/uid/TP40014214-CH21-SW8)
+
+
+- Try to build the project, it should now build successfully!
+
 
 ## Android
 
-- edit `android/settings.gradle` file and add the following
+- Edit `android/settings.gradle` and add the following
 
 ```
 include ':app', ':react-native-share-extension'
@@ -158,7 +183,7 @@ include ':app', ':react-native-share-extension'
 project(':react-native-share-extension').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share-extension/android')
 ```
 
-- edit `android/app/build.gradle` and add the following line before react section in dependency
+- Edit `android/app/build.gradle` and add the following line before the react section in dependencies
 
 ```
 dependencies {
@@ -168,7 +193,7 @@ dependencies {
 }
 ```
 
-- create a folder called `share` under your java project and create two files. Call them `ShareActivity.java` and `ShareApplication.java`....just like your main project.
+- Create a folder called `share` under your java project and create two files. Call them `ShareActivity.java` and `ShareApplication.java`....just like your main project.
 
 - ShareActivity should look like this
 
@@ -191,7 +216,7 @@ public class ShareActivity extends ReactActivity {
 }
 ```
 
-- ShareApplication should look like this
+- ShareApplication should now look like this
 
 ```java
 // your package you defined in ShareActivity
@@ -236,7 +261,8 @@ public class ShareApplication extends Application implements ReactApplication {
 }
 ```
 
-- MainApplication should look like this
+- MainApplication should now look like this
+
 ```java
 // your package you defined in ShareActivity
 package com.sample1;
@@ -279,7 +305,7 @@ public class MainApplication extends Application implements ReactApplication {
 }
 ```
 
-- edit `android/app/src/main/AndroidMainfest.xml` and add the new `activity` right after `devSettingActivity`.
+- Edit `android/app/src/main/AndroidMainfest.xml` and add the new `activity` right after `devSettingActivity`.
 
 ```xml
 <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
@@ -302,9 +328,9 @@ public class MainApplication extends Application implements ReactApplication {
 </activity>
 ```
 
-in this new `activity` I have used 2 variables `@string/title_activity_share` and `@style/Theme.Share.Transparent`. you can add those in `res/values`.
+in this new `activity` I have used 2 variables `@string/title_activity_share` and `@style/Theme.Share.Transparent`, you can add those in `res/values`.
 
-so in `values/strings.xml`
+So in `values/strings.xml`
 
 ```xml
 <resources>
@@ -335,18 +361,18 @@ and in `values/styles.xml`
 </resources>
 ```
 
-- now you should be able to compile the code without error.
+- Now you should be able to compile the code without any errors!
 
-> if you need to add more packages to your share extension do not overrides
-`getPackages`. instead override `getMorePackages` method under `ShareExActivity`.
+> If you need to add more packages to your share extension, do not override
+`getPackages`, instead override the `getMorePackages` method under `ShareExActivity`.
 
 # Share Component
 
-so both share extension and main application are using the same code base, or same main.jsbundle file. So the trick to separate Share and Main App is registering 2 different Component entries with `AppRegistry.registerComponent`.
+So both share extension and main application are using the same code base, or same main.jsbundle file. So the trick to separate Share and Main App is registering 2 different Component entries with `AppRegistry.registerComponent`.
 
-so in both iOS and android share extension we are telling react to load the extension component (in my case `MyShareEx`) from js.
+In both the iOS and Android share extensions we are telling react to load the extension component (in my case `MyShareEx`) from js.
 
-so in `index.ios.js` and `index.android.js` we are writing the same code as
+So in `index.ios.js` and `index.android.js` we are writing the same code:
 
 ```js
 //index.android.js
@@ -372,7 +398,7 @@ AppRegistry.registerComponent('Sample1', () => App)
 AppRegistry.registerComponent('MyShareEx', () => Share) // TODO: Replace MyShareEx with my extension name
 ```
 
-so the `app.ios` and `app.android.js` refers to main app and `share.ios.js` and `share.android.js` refers to share extension.
+So the `app.ios` and `app.android.js` refers to main app and `share.ios.js` and `share.android.js` refers to share extension.
 
 # Share Extension APIs
 
@@ -388,15 +414,43 @@ const { type, value } = await ShareExtension.data()
 
 - `close()`
 
-it simply close the share extension and return the touch event back to application that triggers the share.
+Simply closes the share extension and returns the touch event back to application that triggered the share.
+
+# On iOS: Re-harvesting a shared image
+
+If your share extension is being used to process shared images (be it to social media or processing the image for information), `react-native-share-extension` will provide a URL within `value` with the location of the image.
+
+If you wish to pass this URL back down to Swift or Objective-C for whatever reason, you can use the following to convert the URL back into a UIImage:
+
+```swift
+func harvestImage(from imageURL: String) {
+    if let imgData = FileManager.default.contents(atPath: imageURL) {
+        if let img = UIImage(data: data){
+        	// Process image..
+        }
+    }
+}
+```
+
+or in Objective-C:
+
+```smalltalk
+-(void)harvestImage:(NSString *)imageURL {
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	NSData *imgData = [fileManager contentsAtPath:imageURL];
+	UIImage img = [UIImage imageWithData:imgData];
+	// Process Image..
+}
+```
+
 
 # Test on Device without dev-server
 
-because share extension in ios devices are separate containers and the do not have access to main app folder, you have to build the script twice and package it inside the share extension container. The easiest way of doing this is create a `New Script Phase` in `Build Phases` of your share extension and copy the following line
+Because a share extension in ios is treated as a separate container, they do not have access to main app folder. A resolution for this is that you have to build the script twice and package it inside the share extension container. The easiest way of doing this is create a `New Script Phase` in `Build Phases` of your share extension and copy the following line
 
 ```bash
 export NODE_BINARY=node
-../node_modules/react-native/packager/react-native-xcode.sh
+../node_modules/react-native/scripts/react-native-xcode.sh
 ```
 
 <p align="center">
@@ -407,28 +461,6 @@ export NODE_BINARY=node
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_17.png" />
 </p>
 
-# On iOS: Set the NSExtensionActivationRule key in your Info.plist
-
-For the time being, this package only handles sharing of urls specifically from browsers. In order to tell the system to show your extension only when sharing a url, you must set the `NSExtensionActivationRule` key (under `NSExtensionAttributes`) in the share extension's Info.plist file as follows (this is also needed to pass Apple's reveiw):
-
-```
-<key>NSExtensionAttributes</key>
-<dict>
-  <key>NSExtensionActivationRule</key>
-  <dict>
-    <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-    <integer>1</integer>
-  </dict>
-</dict>
-```
-
-<p align="center">
-    <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/NSExtensionActivationRule.png" />
-</p>
-
-Note that while the above will prevent many apps from wrongly sharing using your extension, some apps (e.g., YouTube) will still allow sharing using your extension, which might cause your extension to crash. Check out [this issue](https://github.com/alinz/react-native-share-extension/issues/40) for details.
-
-For reference about `NSExtensionActivationRule` checkout [Apple's docs](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html#//apple_ref/doc/uid/TP40014214-CH21-SW8)
 
 # App and app extension bundles
 
