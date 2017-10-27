@@ -115,8 +115,9 @@ the setup requires a little bit more work. I will try to describe as detail as p
 ```objective-c
 #import <Foundation/Foundation.h>
 #import "ReactNativeShareExtension.h"
-#import "React/RCTBundleURLProvider.h"
-#import "React/RCTRootView.h"
+#import <React/RCTBundleURLProvider.h>
+#import <React/RCTRootView.h>
+#import <React/RCTLog.h>
 
 @interface MyShareEx : ReactNativeShareExtension
 @end
@@ -135,6 +136,10 @@ RCT_EXPORT_MODULE();
                                                initialProperties:nil
                                                    launchOptions:nil];
   rootView.backgroundColor = nil;
+
+  // Uncomment for console output in Xcode console for release mode on device:
+  // RCTSetLogThreshold(RCTLogLevelInfo - 1);
+
   return rootView;
 }
 
@@ -424,6 +429,95 @@ For the time being, this package only handles sharing of urls specifically from 
 Note that while the above will prevent many apps from wrongly sharing using your extension, some apps (e.g., YouTube) will still allow sharing using your extension, which might cause your extension to crash. Check out [this issue](https://github.com/alinz/react-native-share-extension/issues/40) for details.
 
 For reference about `NSExtensionActivationRule` checkout [Apple's docs](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html#//apple_ref/doc/uid/TP40014214-CH21-SW8)
+
+# App and app extension bundles
+
+The app and app extension bundles can be shared or separated. Separating bundles allows for a minimal footprint for both app and app extension.
+
+#### plist key legend
+
+`BundleEntryFilename` - react-native index or shared index filename.
+
+`BundleSkipped` - Skips bundling when true.
+
+`BundleCopied` - Copies bundle instead of building when true. (Note: Should be set as true for share extension plist only when bundles are shared.)
+
+`BundleForced` - Forces bundling when true.
+
+### Shared bundles
+
+The app extension target builds pre-loaded bundle and is copied to the app target.
+
+#### app plist values
+
+`BundleEntryFilename` = 'index.js'
+
+`BundleSkipped` = true
+
+`BundleCopied` = true
+
+#### app target's "Bundle React Native code and images" phase
+```
+export NODE_BINARY=node
+../bin/react-native-xcode.sh
+```
+
+#### appShareExtension plist values
+
+`BundleEntryFilename` = 'index.js'
+
+`BundleForced` = true
+
+#### appShareExtension target's "Bundle React Native code and images" phase
+```
+cd ../
+npm run cp-native-assets
+cd ios/
+export NODE_BINARY=node
+../bin/react-native-xcode.sh
+```
+
+### Separated bundles
+
+The app extension and app targets build their own unique bundles.
+
+NSNotificationCenter will kill app extensions that are unable to free memory resources when receiving low memory warnings. Also, shared bundles introduce library/pod dependencies that aren't needed by both apps. Configuring separate bundles via Xcode requires customizing react-native-xcode.sh; a quick example customization can be found in the bin directory. Update the path to the packager in both the app and app extension target's "Bundle React Native code and images" Build Phases.
+
+Build time can be halved while debugging by disabling the bundle for whichever target you aren't debugging (app or app ex).
+
+#### app plist values
+
+`BundleEntryFilename` = 'index.js'
+
+#### app target's "Bundle React Native code and images" phase
+```
+export NODE_BINARY=node
+#export ENTRY_FILENAME=index
+../bin/react-native-xcode.sh
+```
+
+#### appShareExtension plist values
+
+`BundleEntryFilename` = 'share.index.js'
+
+`BundleForced` = true
+
+#### appShareExtension target's "Bundle React Native code and images" phase
+```
+cd ../
+npm run cp-native-assets
+cd ios/
+export NODE_BINARY=node
+../bin/react-native-xcode.sh
+```
+
+# Troubleshooting on iOS devices
+
+Using the iOS Simulator and remote react-native debugger to develop the extension can hide issues that won't occur until testing on device. If you're experiencing issues running the extension on iOS devices, examine the Xcode console or device log for any obvious errors. If the Xcode console isn't receiving console output, ensure that the OS_ACTIVITY_MODE=disable environment var isn't enabled for the active scheme (see https://github.com/facebook/react-native/issues/10027). OS_ACTIVITY_MODE will hide device logging in the Xcode console, so its use is only advisable for iOS Simulator. For release mode, in order to view console output and see all output in the syslog, uncomment the `RCTSetLogThreshold(RCTLogLevelInfo - 1);` statement in your MyShareEx class.
+
+1. If you're using react-native latest, error boundaries might help with JS errors. Another option is to catch render exceptions or test for errors, then render that output with something like a Text component. As long as your share app initializes, you should be able to see yellowbox/redbox errors. If you're not seeing them, you likely have an initialization issue.
+2. Disable bundling on the main target when debugging the extension target, it's not needed when you're not working with the main app.
+3. [Enable breaking on exceptions](http://blog.manbolo.com/2012/01/23/xcode-tips-1-break-on-exceptions). This is helpful if there are any exceptions in the extension itself; perhaps most useful if you've customized the native module.
 
 # Final note
 
