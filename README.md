@@ -285,7 +285,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
-    protected boolean getUseDeveloperSupport() {
+    public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
     }
 
@@ -319,11 +319,16 @@ public class MainApplication extends Application implements ReactApplication {
     android:theme="@style/Theme.Share.Transparent" >
    <intent-filter>
      <action android:name="android.intent.action.SEND" />
+     <action android:name="android.intent.action.SEND_MULTIPLE" />
      <category android:name="android.intent.category.DEFAULT" />
     //  for sharing links include
      <data android:mimeType="text/plain" />
-    //  for sharing photos include
-    <data android:mimeType="image/*" />
+     //  for sharing photos include
+     <data android:mimeType="image/*" />
+     //  for sharing videos include
+     <data android:mimeType="video/*"/>
+     //  for sharing audio include
+     <data android:mimeType="audio/*"/>
    </intent-filter>
 </activity>
 ```

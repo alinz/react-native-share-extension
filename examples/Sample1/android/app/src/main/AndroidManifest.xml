@@ -34,8 +34,16 @@
           android:theme="@style/Theme.Share.Transparent" >
          <intent-filter>
            <action android:name="android.intent.action.SEND" />
+           <action android:name="android.intent.action.SEND_MULTIPLE" />
            <category android:name="android.intent.category.DEFAULT" />
-           <data android:mimeType="text/plain" />
+           //  for sharing links include
+            <data android:mimeType="text/plain" />
+           //  for sharing photos include
+           <data android:mimeType="image/*" />
+           //  for sharing videos include
+           <data android:mimeType="video/*"/>
+           //  for sharing audio include
+           <data android:mimeType="audio/*"/>
          </intent-filter>
       </activity>
     </application>
