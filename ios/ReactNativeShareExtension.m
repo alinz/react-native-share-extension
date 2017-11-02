@@ -5,6 +5,7 @@
 #define URL_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
 #define TEXT_IDENTIFIER (NSString *)kUTTypePlainText
+#define VIDEO_IDENTIFIER (NSString *)kUTTypeQuickTimeMovie
 
 NSExtensionContext* extensionContext;
 
@@ -60,7 +61,6 @@ RCT_REMAP_METHOD(data,
 }
 
 - (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSString *value, NSString* contentType, NSException *exception))callback {
-    
     @try {
         NSExtensionItem *item = [context.inputItems firstObject];
         NSArray *attachments = item.attachments;
@@ -68,6 +68,9 @@ RCT_REMAP_METHOD(data,
         __block NSItemProvider *urlProvider = nil;
         __block NSItemProvider *imageProvider = nil;
         __block NSItemProvider *textProvider = nil;
+        __block NSItemProvider *videoProvider = nil;
+        
+        NSLog(@"[SHARE EXTENSION] value: %@\n",item.attributedContentText);
 
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
             if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
@@ -79,8 +82,15 @@ RCT_REMAP_METHOD(data,
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
                 *stop = YES;
+            } else if ([provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER]){
+                videoProvider = provider;
+                *stop = YES;
+            } else {
+                callback(nil, nil, [NSException exceptionWithName:@"Error" reason:@"couldn't find provider" userInfo:nil]);
+                *stop = YES;
             }
         }];
+        
 
         if(urlProvider) {
             [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
@@ -92,31 +102,10 @@ RCT_REMAP_METHOD(data,
             }];
         } else if (imageProvider) {
             [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                
-                /**
-                 * Save the image to NSTemporaryDirectory(), which cleans itself tri-daily.
-                 * This is necessary as the iOS 11 screenshot editor gives us a UIImage, while
-                 * sharing from Photos and similar apps gives us a URL
-                 * Therefore the solution is to save a UIImage, either way, and return the local path to that temp UIImage
-                 * This path will be sent to React Native and can be processed and accessed RN side.
-                **/
-                
-                UIImage *sharedImage;
-                NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"RNSE_TEMP_IMG"];
-                NSString *fullPath = [filePath stringByAppendingPathExtension:@"png"];
-                
-                if ([(NSObject *)item isKindOfClass:[UIImage class]]){
-                    sharedImage = (UIImage *)item;
-                }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
-                    NSURL* url = (NSURL *)item;
-                    NSData *data = [NSData dataWithContentsOfURL:url];
-                    sharedImage = [UIImage imageWithData:data];
-                }
-                
-                [UIImagePNGRepresentation(sharedImage) writeToFile:fullPath atomically:YES];
-                
+                NSURL *url = (NSURL *)item;
+
                 if(callback) {
-                    callback(fullPath, [fullPath pathExtension], nil);
+                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
                 }
             }];
         } else if (textProvider) {
@@ -125,6 +114,15 @@ RCT_REMAP_METHOD(data,
 
                 if(callback) {
                     callback(text, @"text/plain", nil);
+                }
+            }];
+        } else if (videoProvider) {
+            NSLog(@"[SHARE EXTENSION]: loading item for video identifier...");
+            [videoProvider loadItemForTypeIdentifier:VIDEO_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                NSURL *url = (NSURL *)item;
+
+                if(callback) {
+                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
                 }
             }];
         } else {
@@ -139,7 +137,5 @@ RCT_REMAP_METHOD(data,
         }
     }
 }
-
-
 
 @end
