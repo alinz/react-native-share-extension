@@ -543,6 +543,19 @@ export NODE_BINARY=node
 ../bin/react-native-xcode.sh
 ```
 
+# Open container app
+Steps needed to open the host application from the share extension.
+1) Allow your app to be opened via URL Scheme - [Learn more](https://medium.com/react-native-training/deep-linking-your-react-native-app-d87c39a1ad5e)
+2) In xcode, select share extension and go to Build Settings and set **Require Only App-Extension-Safe API** to `NO`.
+
+Then you can open your app from the share extension by calling openURL:
+
+```
+import ShareExtension from 'react-native-share-extension';
+
+ShareExtension.openURL('sample://example/url');
+```
+
 # Troubleshooting on iOS devices
 
 Using the iOS Simulator and remote react-native debugger to develop the extension can hide issues that won't occur until testing on device. If you're experiencing issues running the extension on iOS devices, examine the Xcode console or device log for any obvious errors. If the Xcode console isn't receiving console output, ensure that the OS_ACTIVITY_MODE=disable environment var isn't enabled for the active scheme (see https://github.com/facebook/react-native/issues/10027). OS_ACTIVITY_MODE will hide device logging in the Xcode console, so its use is only advisable for iOS Simulator. For release mode, in order to view console output and see all output in the syslog, uncomment the `RCTSetLogThreshold(RCTLogLevelInfo - 1);` statement in your MyShareEx class.
