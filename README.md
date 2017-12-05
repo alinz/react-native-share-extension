@@ -446,7 +446,7 @@ or in Objective-C:
 
 # Test on Device without dev-server
 
-Because a share extension in ios is treated as a separate container, they do not have access to main app folder. A resolution for this is that you have to build the script twice and package it inside the share extension container. The easiest way of doing this is create a `New Script Phase` in `Build Phases` of your share extension. Double click on 'Run Script' and name it '__Bundle React Native code and images__'. Then, copy the following line:
+Because a share extension in ios is treated as a separate container, they do not have access to main app folder. A resolution for this is that you have to build the script twice and package it inside the share extension container. The easiest way of doing this is create a `New Script Phase` in `Build Phases` of your share extension. Double click on '__Run Script__' and name it '__Bundle React Native code and images__'. Then, copy the following line:
 
 ```bash
 export NODE_BINARY=node
