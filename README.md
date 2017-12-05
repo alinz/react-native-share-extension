@@ -538,9 +538,6 @@ export NODE_BINARY=node
 
 #### appShareExtension target's "Bundle React Native code and images" phase
 ```
-cd ../
-npm run cp-native-assets
-cd ios/
 export NODE_BINARY=node
 ../bin/react-native-xcode.sh
 ```
