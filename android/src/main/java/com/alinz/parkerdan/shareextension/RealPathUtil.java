@@ -64,14 +64,52 @@ public class RealPathUtil {
      else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
          // Return the remote address
-         if (isGooglePhotosUri(uri))
-             return uri.getLastPathSegment();
-
-         return getDataColumn(context, uri, null, null);
+         return saveFile(context, uri).getPath();
      }
      // File
      else if ("file".equalsIgnoreCase(uri.getScheme())) {
          return uri.getPath();
+     }
+
+     return null;
+ }
+ 
+ private static Uri saveFile(final Context context, Uri uri) {
+     Bitmap bitmap = null;
+     try {
+         InputStream inputStream =
+                 context.getContentResolver().openInputStream(uri);
+         bitmap= BitmapFactory.decodeStream(inputStream);
+         String sdCardPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+         File myDir = new File(sdCardPath);
+         if (!myDir.exists()) {
+             myDir.mkdir();
+         }
+
+         Random generator = new Random();
+         int n = 10000;
+         n = generator.nextInt(n);
+         String fname = "Image-" + n + ".jpg";
+         File file = new File(myDir, fname);
+         if (file.exists())
+             file.delete();
+         try {
+             FileOutputStream out = new FileOutputStream(file);
+             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+             out.flush();
+             out.close();
+
+
+             Uri newURi = Uri.fromFile(file);
+
+             return newURi;
+         }
+         catch (Exception e) {
+             e.printStackTrace();
+         }
+
+     }catch (IOException e) {
+
      }
 
      return null;
