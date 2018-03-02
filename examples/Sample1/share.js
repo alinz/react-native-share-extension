@@ -28,7 +28,7 @@ export default class Share extends Component {
     try {
       const data = await ShareExtension.data();
       this.setState({
-        data,
+        data
       })
     } catch(e) {
       console.log('errrr', e)
