@@ -69,33 +69,7 @@ RCT_REMAP_METHOD(data,
         __block NSUInteger index = 0;
 
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
-            if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
-                urlProvider = provider;
-                index += 1;
-                [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                    NSURL *url = (NSURL *)item;
-                    [itemArray addObject: @{
-                                            @"type": @"text/plain",
-                                            @"value": [url absoluteString]
-                                            }];
-                    if (callback && (index == [attachments count])) {
-                        callback(itemArray, nil);
-                    }
-                }];
-            } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
-                textProvider = provider;
-                [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                    NSString *text = (NSString *)item;
-                    index += 1;
-                    [itemArray addObject: @{
-                                            @"type": @"text/plain",
-                                            @"value": text
-                                            }];
-                    if (callback && (index == [attachments count])) {
-                        callback(itemArray, nil);
-                    }
-                }];
-            } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
+            if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
                 [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                     /**
@@ -134,6 +108,32 @@ RCT_REMAP_METHOD(data,
                         callback(itemArray, nil);
                     }
 
+                }];
+            } else if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
+                urlProvider = provider;
+                index += 1;
+                [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                    NSURL *url = (NSURL *)item;
+                    [itemArray addObject: @{
+                                            @"type": @"text/plain",
+                                            @"value": [url absoluteString]
+                                            }];
+                    if (callback && (index == [attachments count])) {
+                        callback(itemArray, nil);
+                    }
+                }];
+            } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
+                textProvider = provider;
+                [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                    NSString *text = (NSString *)item;
+                    index += 1;
+                    [itemArray addObject: @{
+                                            @"type": @"text/plain",
+                                            @"value": text
+                                            }];
+                    if (callback && (index == [attachments count])) {
+                        callback(itemArray, nil);
+                    }
                 }];
             } else {
                 index += 1;
