@@ -542,6 +542,18 @@ cd ios/
 export NODE_BINARY=node
 ../bin/react-native-xcode.sh
 ```
+# Open container app
+Steps needed to open the host application from the share extension.
+1) Allow your app to be opened via URL Scheme - [Learn more](https://medium.com/react-native-training/deep-linking-your-react-native-app-d87c39a1ad5e)
+2) In xcode, select share extension and go to Build Settings and set **Require Only App-Extension-Safe API** to `NO`.
+
+Then you can open your app from the share extension by calling openURL:
+
+```
+import ShareExtension from 'react-native-share-extension';
+
+ShareExtension.openURL('sample://example/url');
+```
 
 # Troubleshooting on iOS devices
 
