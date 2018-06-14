@@ -9,6 +9,13 @@ import android.provider.MediaStore;
 import android.content.ContentUris;
 import android.os.Environment;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
+
 public class RealPathUtil {
  public static String getRealPathFromURI(final Context context, final Uri uri) {
 
@@ -62,12 +69,7 @@ public class RealPathUtil {
      }
      // MediaStore (and general)
      else if ("content".equalsIgnoreCase(uri.getScheme())) {
-
-         // Return the remote address
-         if (isGooglePhotosUri(uri))
-             return uri.getLastPathSegment();
-
-         return getDataColumn(context, uri, null, null);
+         return getImagePath(context, uri);
      }
      // File
      else if ("file".equalsIgnoreCase(uri.getScheme())) {
@@ -135,12 +137,73 @@ public class RealPathUtil {
      return "com.android.providers.media.documents".equals(uri.getAuthority());
  }
 
+ public static String getImagePath(Context context, Uri uri){
+    if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+        if (isGoogleOldPhotosUri(uri)) {
+            // return http path, then download file.
+            return uri.getLastPathSegment();
+        } else if (isGoogleNewPhotosUri(uri)) {
+            // copy from uri. context.getContentResolver().openInputStream(uri);
+            return copyFile(context, uri);
+        }
+    }
+
+    return getDataColumn(context, uri, null, null);
+ }
+
  /**
   * @param uri The Uri to check.
   * @return Whether the Uri authority is Google Photos.
   */
- public static boolean isGooglePhotosUri(Uri uri) {
+ public static boolean isGoogleOldPhotosUri(Uri uri) {
      return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+ }
+
+ public static boolean isGoogleNewPhotosUri(Uri uri) {
+    return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
+ }
+
+ private static String copyFile(Context context, Uri uri) {
+
+    String filePath;
+    InputStream inputStream = null;
+    BufferedOutputStream outStream = null;
+    try {
+        inputStream = context.getContentResolver().openInputStream(uri);
+
+        File extDir = context.getExternalFilesDir(null);
+        filePath = extDir.getAbsolutePath() + "/IMG_" + UUID.randomUUID().toString() + ".jpg";
+        outStream = new BufferedOutputStream(new FileOutputStream
+                (filePath));
+
+        byte[] buf = new byte[2048];
+        int len;
+        while ((len = inputStream.read(buf)) > 0) {
+            outStream.write(buf, 0, len);
+        }
+
+    } catch (IOException e) {
+        e.printStackTrace();
+        filePath = "";
+    } finally {
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            if (outStream != null) {
+                outStream.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    return filePath;
  }
 
 }
