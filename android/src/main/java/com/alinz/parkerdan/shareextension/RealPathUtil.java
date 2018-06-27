@@ -143,7 +143,7 @@ public class RealPathUtil {
         if (isGoogleOldPhotosUri(uri)) {
             // return http path, then download file.
             return uri.getLastPathSegment();
-        } else if (isGoogleNewPhotosUri(uri)) {
+        } else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri)) {
             // copy from uri. context.getContentResolver().openInputStream(uri);
             return copyFile(context, uri);
         }
@@ -163,6 +163,10 @@ public class RealPathUtil {
  public static boolean isGoogleNewPhotosUri(Uri uri) {
     return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
  }
+
+ public static boolean isMMSFile(Uri uri) {
+    return "com.android.mms.file".equals(uri.getAuthority());
+}
 
  private static String copyFile(Context context, Uri uri) {
 
