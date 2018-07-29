@@ -446,7 +446,7 @@ or in Objective-C:
 
 # Test on Device without dev-server
 
-Because a share extension in ios is treated as a separate container, they do not have access to main app folder. A resolution for this is that you have to build the script twice and package it inside the share extension container. The easiest way of doing this is create a `New Script Phase` in `Build Phases` of your share extension and copy the following line
+Because a share extension in ios is treated as a separate container, they do not have access to main app folder. A resolution for this is that you have to build the script twice and package it inside the share extension container. The easiest way of doing this is create a `New Script Phase` in `Build Phases` of your share extension. Double click on '__Run Script__' and name it '__Bundle React Native code and images__'. Then, copy the following line:
 
 ```bash
 export NODE_BINARY=node
@@ -459,6 +459,10 @@ export NODE_BINARY=node
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_17.png" />
+</p>
+
+<p align="center">
+    <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_18.png" />
 </p>
 
 
@@ -501,10 +505,8 @@ export NODE_BINARY=node
 `BundleForced` = true
 
 #### appShareExtension target's "Bundle React Native code and images" phase
+
 ```
-cd ../
-npm run cp-native-assets
-cd ios/
 export NODE_BINARY=node
 ../bin/react-native-xcode.sh
 ```
@@ -536,12 +538,15 @@ export NODE_BINARY=node
 
 #### appShareExtension target's "Bundle React Native code and images" phase
 ```
-cd ../
-npm run cp-native-assets
-cd ios/
 export NODE_BINARY=node
 ../bin/react-native-xcode.sh
 ```
+
+### Sharing Data
+
+You may need to share authorization or other types of data from the main app with the app extension. For security purposes, Apple enforces app data containers isolation. In order to share data, you will need to create an App Group with your Apple Developer account, for the app and app extension. See "[Adding an App to an App Group](https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/EntitlementKeyReference/Chapters/EnablingAppSandbox.html#//apple_ref/doc/uid/TP40011195-CH4-SW19)". Then, both app and app extension can use a shared container. See "[Sharing Data with Your Containing App](https://developer.apple.com/library/content/documentation/General/Conceptual/ExtensibilityPG/ExtensionScenarios.html#//apple_ref/doc/uid/TP40014214-CH21-SW6)".
+
+react-native's AsyncStorage won't work for shared containers, as it's local to the app's container. You can use something like [react-native-fs](https://github.com/itinance/react-native-fs#ios-only-pathforgroupgroupidentifier-string-promisestring) to replace AsyncStorage.
 
 # Troubleshooting on iOS devices
 
