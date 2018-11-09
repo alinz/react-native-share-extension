@@ -112,6 +112,8 @@ The setup requires a little bit more work. I will try to describe as detail as p
 
 - Now go back to your extension file (in my case `MyShareEx.m`) and paste the following code there **being sure to substitute `MyShareEx` in all three places for whatever you chose above**
 
+> If your project entry is `index.js` instead of `index.ios.js` then needs to replace `@"index.ios"` with `@"index"`
+
 ```objective-c
 #import <Foundation/Foundation.h>
 #import "ReactNativeShareExtension.h"
