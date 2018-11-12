@@ -20,7 +20,6 @@ public class RealPathUtil {
  public static String getRealPathFromURI(final Context context, final Uri uri) {
 
      final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
-
      // DocumentProvider
      if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
          // ExternalStorageProvider
@@ -139,16 +138,14 @@ public class RealPathUtil {
 
  public static String getImagePath(Context context, Uri uri){
     if ("content".equalsIgnoreCase(uri.getScheme())) {
-
         if (isGoogleOldPhotosUri(uri)) {
             // return http path, then download file.
             return uri.getLastPathSegment();
-        } else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri)) {
+        } else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri) || isWhatsappFile(uri)) {
             // copy from uri. context.getContentResolver().openInputStream(uri);
             return copyFile(context, uri);
         }
     }
-
     return getDataColumn(context, uri, null, null);
  }
 
@@ -166,6 +163,10 @@ public class RealPathUtil {
 
  public static boolean isMMSFile(Uri uri) {
     return "com.android.mms.file".equals(uri.getAuthority());
+}
+
+ public static boolean isWhatsappFile(Uri uri) {
+    return "com.whatsapp.provider.media".equals(uri.getAuthority());
 }
 
  private static String copyFile(Context context, Uri uri) {
