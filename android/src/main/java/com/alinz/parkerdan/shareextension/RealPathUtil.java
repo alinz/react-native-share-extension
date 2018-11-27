@@ -104,6 +104,8 @@ public class RealPathUtil {
              final int index = cursor.getColumnIndexOrThrow(column);
              return cursor.getString(index);
          }
+     } catch (Exception e) {
+         return null;
      } finally {
          if (cursor != null)
              cursor.close();
@@ -137,16 +139,17 @@ public class RealPathUtil {
  }
 
  public static String getImagePath(Context context, Uri uri){
-    if ("content".equalsIgnoreCase(uri.getScheme())) {
-        if (isGoogleOldPhotosUri(uri)) {
-            // return http path, then download file.
-            return uri.getLastPathSegment();
-        } else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri) || isWhatsappFile(uri)) {
-            // copy from uri. context.getContentResolver().openInputStream(uri);
-            return copyFile(context, uri);
-        }
-    }
-    return getDataColumn(context, uri, null, null);
+     final String dataColumn;
+     dataColumn = getDataColumn(context, uri, null, null);
+     if (dataColumn != null){
+         return dataColumn;
+     } else if (isGoogleOldPhotosUri(uri)) {
+        // return http path, then download file.
+        return uri.getLastPathSegment();
+     } else {
+        // copy from uri.context.getContentResolver().openInputStream(uri);
+        return copyFile(context, uri);
+     }
  }
 
  /**
@@ -156,18 +159,6 @@ public class RealPathUtil {
  public static boolean isGoogleOldPhotosUri(Uri uri) {
      return "com.google.android.apps.photos.content".equals(uri.getAuthority());
  }
-
- public static boolean isGoogleNewPhotosUri(Uri uri) {
-    return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
- }
-
- public static boolean isMMSFile(Uri uri) {
-    return "com.android.mms.file".equals(uri.getAuthority());
-}
-
- public static boolean isWhatsappFile(Uri uri) {
-    return "com.whatsapp.provider.media".equals(uri.getAuthority());
-}
 
  private static String copyFile(Context context, Uri uri) {
 
