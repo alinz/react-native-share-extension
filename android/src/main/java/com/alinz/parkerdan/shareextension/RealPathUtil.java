@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
-import com.sun.org.apache.xerces.internal.util.URI;
-
 public class RealPathUtil {
  public static String getRealPathFromURI(final Context context, final Uri uri) {
 
@@ -169,7 +167,7 @@ public class RealPathUtil {
     return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
  }
 
- public static boolean isMMSFile(URI uri) {
+ public static boolean isMMSFile(Uri uri) {
     //  uri.getAuthority can be equal to "com.android.mms.file" and "mms"
     return uri.getAuthority().contains("mms");
 }
