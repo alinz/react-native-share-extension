@@ -5,12 +5,13 @@
 
 import React, { Component } from 'react'
 import Modal from 'react-native-modalbox'
-import ShareExtension from 'react-native-share-extension'
+import ShareExtension from './react-native-share-extension'
 
 import {
   Text,
   TextInput,
   View,
+  Image,
   TouchableOpacity
 } from 'react-native'
 
@@ -19,17 +20,15 @@ export default class Share extends Component {
     super(props, context)
     this.state = {
       isOpen: true,
-      type: '',
-      value: ''
+      data: [],
     }
   }
 
   async componentDidMount() {
     try {
-      const { type, value } = await ShareExtension.data()
+      const data = await ShareExtension.data();
       this.setState({
-        type,
-        value
+        data
       })
     } catch(e) {
       console.log('errrr', e)
@@ -45,8 +44,17 @@ export default class Share extends Component {
       isOpen: false
     })
   }
+  renderData(data, index) {
+    return (
+      <View key={index}>
+        <Text>type: { data.type }</Text>
+        <Text>value: { data.value }</Text>
+      </View>
+      );
+  }
 
   render() {
+    const dataComponent = this.state.data.map(this.renderData);
     return (
       <Modal backdrop={false}
              style={{ backgroundColor: 'transparent' }} position="center" isOpen={this.state.isOpen} onClosed={this.onClose}>
@@ -54,8 +62,7 @@ export default class Share extends Component {
             <View style={{ borderColor: 'green', borderWidth: 1, backgroundColor: 'white', height: 200, width: 300 }}>
               <TouchableOpacity onPress={this.closing}>
                 <Text>Close</Text>
-                <Text>type: { this.state.type }</Text>
-                <Text>value: { this.state.value }</Text>
+                {dataComponent}
               </TouchableOpacity>
             </View>
           </View>

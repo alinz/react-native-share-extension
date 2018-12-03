@@ -7,6 +7,14 @@ This is a helper module which brings react native as an engine to drive share ex
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/android-demo.gif" />
 </p>
 
+# Features
+- You can share within your app:
+   - a list of images,
+   - text
+   - url
+   - messages (from whatsapp for instance, we get either the text or the image)
+- Return an array like `[{type, value}]`
+
 # Installation
 
 Installation should be very easy by just installing it from npm.
@@ -150,15 +158,21 @@ RCT_EXPORT_MODULE();
 
 # Set the NSExtensionActivationRule key in your Info.plist
 
-For the time being, this package only handles sharing of urls specifically from browsers. In order to tell the system to show your extension only when sharing a url, you must set the `NSExtensionActivationRule` key (under `NSExtensionAttributes`) in the share extension's Info.plist file as follows (this is also needed to pass Apple's reveiw):
+For the time being, this package handles sharing of urls, text or images. In order to tell the system to show your extension only when type is supported, you must set the `NSExtensionActivationRule` key (under `NSExtensionAttributes`) in the share extension's Info.plist file as follows (this is also needed to pass Apple's review):
 
 ```
 <key>NSExtensionAttributes</key>
 <dict>
   <key>NSExtensionActivationRule</key>
   <dict>
-    <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-    <integer>1</integer>
+  <key>NSExtensionActivationSupportsImageWithMaxCount</key>
+  <integer>2</integer>
+  <key>NSExtensionActivationSupportsMovieWithMaxCount</key>
+  <integer>0</integer>
+  <key>NSExtensionActivationSupportsText</key>
+  <true/>
+  <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+  <integer>1</integer>
   </dict>
 </dict>
 ```
@@ -287,7 +301,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
-    protected boolean getUseDeveloperSupport() {
+    public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
     }
 
@@ -321,11 +335,16 @@ public class MainApplication extends Application implements ReactApplication {
     android:theme="@style/Theme.Share.Transparent" >
    <intent-filter>
      <action android:name="android.intent.action.SEND" />
+     <action android:name="android.intent.action.SEND_MULTIPLE" />
      <category android:name="android.intent.category.DEFAULT" />
     //  for sharing links include
      <data android:mimeType="text/plain" />
-    //  for sharing photos include
-    <data android:mimeType="image/*" />
+     //  for sharing photos include
+     <data android:mimeType="image/*" />
+     //  for sharing videos include
+     <data android:mimeType="video/*"/>
+     //  for sharing audio include
+     <data android:mimeType="audio/*"/>
    </intent-filter>
 </activity>
 ```
