@@ -57,9 +57,10 @@ export default class Share extends Component {
     }
   }
 
-  onClose = () => ShareExtension.close()
-
-  closing = () => this.setState({ modalVisible: false });
+  onClose = () => {
+    this.setState({ modalVisible: false });
+    ShareExtension.close();
+  };
 
   render() {
     const {
@@ -78,7 +79,7 @@ export default class Share extends Component {
       >
         <View style={ styles.container }>
           <View style={ styles.content }>
-            <TouchableOpacity onPress={ this.closing }>
+            <TouchableOpacity onPress={ this.onClose }>
               <Text>Close</Text>
               <Text>type: { type }</Text>
               <Text>value: { value }</Text>
