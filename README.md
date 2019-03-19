@@ -21,6 +21,11 @@ The setup requires a little bit more work. I will try to describe as detail as p
 
 ## iOS
 
+### Prerequisites
+If you are sharing URL's and want your Share Extension to show up in Mobile Safari, make sure your iOS Deployment Target is set to 10.0 or lower. Any target higher then this will not show your Share Extension in Mobile Safari.
+
+### Setup
+
 - Click on your project's name
 - Click on `+` sign
 
@@ -150,18 +155,26 @@ RCT_EXPORT_MODULE();
 
 # Set the NSExtensionActivationRule key in your Info.plist
 
-For the time being, this package only handles sharing of urls specifically from browsers. In order to tell the system to show your extension only when sharing a url, you must set the `NSExtensionActivationRule` key (under `NSExtensionAttributes`) in the share extension's Info.plist file as follows (this is also needed to pass Apple's reveiw):
+For the time being, this package only handles sharing of urls specifically from browsers or apps supporting the given `NSExtensionActivationRule`'s. In order to tell the system to show your extension only when sharing a url, you must set the `NSExtensionActivationRule` key (under `NSExtensionAttributes`) in the share extension's Info.plist file as follows (this is also needed to pass Apple's review):
 
 ```
 <key>NSExtensionAttributes</key>
 <dict>
   <key>NSExtensionActivationRule</key>
   <dict>
+    <key>NSExtensionActivationSupportsText</key>
+    <integer>2</integer>
+    <key>NSExtensionActivationSupportsText</key>
+    <true/>
+    <key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+    <integer>1</integer>
     <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
     <integer>1</integer>
   </dict>
 </dict>
 ```
+
+The combination of options given above may yield the best results for your Share Extension to show up in Mobile Safari, other browsers and other apps that allow you to share URL's.
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/NSExtensionActivationRule.png" />
