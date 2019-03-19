@@ -162,7 +162,7 @@ For the time being, this package only handles sharing of urls specifically from 
 <dict>
   <key>NSExtensionActivationRule</key>
   <dict>
-    <key>NSExtensionActivationSupportsText</key>
+    <key>NSExtensionActivationDictionaryVersion</key>
     <integer>2</integer>
     <key>NSExtensionActivationSupportsText</key>
     <true/>
