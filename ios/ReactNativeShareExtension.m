@@ -68,7 +68,6 @@ RCT_REMAP_METHOD(data,
 }
 
 - (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSString *value, NSString* contentType, NSException *exception))callback {
-    
     @try {
         NSExtensionItem *item = [context.inputItems firstObject];
         NSArray *attachments = item.attachments;
@@ -108,15 +107,17 @@ RCT_REMAP_METHOD(data,
                  * Therefore the solution is to save a UIImage, either way, and return the local path to that temp UIImage
                  * This path will be sent to React Native and can be processed and accessed RN side.
                 **/
-                
+
                 UIImage *sharedImage;
-                NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"RNSE_TEMP_IMG"];
-                NSString *fullPath = [filePath stringByAppendingPathExtension:@"png"];
-                
+                NSString *filePath = nil;
+                NSString *fullPath = nil;
+
                 if ([(NSObject *)item isKindOfClass:[UIImage class]]){
                     sharedImage = (UIImage *)item;
+                    fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"Image.png"];
                 }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
                     NSURL* url = (NSURL *)item;
+                    fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:url.lastPathComponent];
                     NSData *data = [NSData dataWithContentsOfURL:url];
                     sharedImage = [UIImage imageWithData:data];
                 }
@@ -147,7 +148,5 @@ RCT_REMAP_METHOD(data,
         }
     }
 }
-
-
 
 @end
