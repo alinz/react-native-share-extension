@@ -14,11 +14,11 @@ Fork from: [react-native-share-extension](https://github.com/alinz/react-native-
 Installation should be very easy by just installing it from npm.
 
 ```js
-npm install rn-share-extension --save
+npm install rn-extensions-share --save
 ```
 or
 ```js
-yarn add rn-share-extension
+yarn add rn-extensions-share
 ```
 
 # Setup
@@ -80,7 +80,7 @@ The setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_09.png" />
 </p>
 
-- select `node_modules` > `rn-share-extension` > `ios` > `ReactNativeShareExtension.xcodeproj`
+- select `node_modules` > `rn-extensions-share` > `ios` > `ReactNativeShareExtension.xcodeproj`
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_10.png" />
@@ -92,7 +92,7 @@ The setup requires a little bit more work. I will try to describe as detail as p
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_11.png" />
 </p>
 
-- Add the new path `$(SRCROOT)/../node_modules/rn-share-extension/ios` with `recursive` selected
+- Add the new path `$(SRCROOT)/../node_modules/rn-extensions-share/ios` with `recursive` selected
 
 <p align="center">
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_12.png" />
@@ -186,9 +186,9 @@ For reference about `NSExtensionActivationRule` checkout [Apple's docs](https://
 - Edit `android/settings.gradle` and add the following
 
 ```
-include ':app', ':rn-share-extension'
+include ':app', ':rn-extensions-share'
 
-project(':rn-share-extension').projectDir = new File(rootProject.projectDir, '../node_modules/rn-share-extension/android')
+project(':rn-extensions-share').projectDir = new File(rootProject.projectDir, '../node_modules/rn-extensions-share/android')
 ```
 
 - Edit `android/app/build.gradle` and add the following line before the react section in dependencies
@@ -196,7 +196,7 @@ project(':rn-share-extension').projectDir = new File(rootProject.projectDir, '..
 ```
 dependencies {
     ...
-    compile project(':rn-share-extension')
+    compile project(':rn-extensions-share')
     compile "com.facebook.react:react-native:+"
 }
 ```
@@ -414,7 +414,7 @@ So the `app.ios` and `app.android.js` refers to main app and `share.ios.js` and 
 
 
 ```js
-import ShareExtension from 'rn-share-extension'
+import ShareExtension from 'rn-extensions-share'
 ...
 
 const { type, value } = await ShareExtension.data()
@@ -426,7 +426,7 @@ Simply closes the share extension and returns the touch event back to applicatio
 
 # On iOS: Re-harvesting a shared image
 
-If your share extension is being used to process shared images (be it to social media or processing the image for information), `rn-share-extension` will provide a URL within `value` with the location of the image.
+If your share extension is being used to process shared images (be it to social media or processing the image for information), `rn-extensions-share` will provide a URL within `value` with the location of the image.
 
 If you wish to pass this URL back down to Swift or Objective-C for whatever reason, you can use the following to convert the URL back into a UIImage:
 

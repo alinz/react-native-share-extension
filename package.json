@@ -1,5 +1,5 @@
 {
-  "name": "rn-share-extension",
+  "name": "rn-extensions-share",
   "version": "1.0.0",
   "description": "Share-Extension using react-native for both ios and android",
   "main": "lib/index.js",
@@ -13,7 +13,7 @@
   "keywords": ["react-component", "react-native", "share-extension"],
   "author": {
     "name": "Djorkaeff Alexandre",
-    "email": "djorkaeff.unb@gmail.com",
+    "email": "djorkaeffalexandre@gmail.com",
     "url": "http://github.com/djorkaeffalexandre"
   },
   "license": "MIT",
