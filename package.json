@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/djorkaeffalexandre/rn-share-extension"
+    "url": "https://github.com/djorkaeffalexandre/rn-extensions-share"
   },
   "keywords": ["react-component", "react-native", "share-extension"],
   "author": {
@@ -18,7 +18,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/djorkaeffalexandre/rn-share-extension"
+    "url": "https://github.com/djorkaeffalexandre/rn-extensions-share"
   },
-  "homepage": "https://github.com/djorkaeffalexandre/rn-share-extension"
+  "homepage": "https://github.com/djorkaeffalexandre/rn-extensions-share"
 }
