@@ -39,6 +39,7 @@ RCT_EXPORT_MODULE();
 RCT_EXPORT_METHOD(close) {
     [extensionContext completeRequestReturningItems:nil
                                   completionHandler:nil];
+    exit(0);
 }
 
 
@@ -99,10 +100,26 @@ RCT_REMAP_METHOD(data,
             }];
         } else if (imageProvider) {
             [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                NSURL *url = (NSURL *)item;
+                UIImage *sharedImage;
+                NSString *filePath = nil;
+                NSString *fullPath = nil;
+                NSString *path = nil;
 
+                if ([(NSObject *)item isKindOfClass:[UIImage class]]){
+                    sharedImage = (UIImage *)item;
+                    fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"image.png"];
+                }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
+                    NSURL* url = (NSURL *)item;
+                    fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:url.lastPathComponent];
+                    NSData *data = [NSData dataWithContentsOfURL:url];
+                    sharedImage = [UIImage imageWithData:data];
+                }
+                
+                [UIImagePNGRepresentation(sharedImage) writeToFile:fullPath atomically:YES];
+                
+                path = [NSString stringWithFormat:@"%@%@", @"file://", fullPath];
                 if(callback) {
-                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
+                    callback(path, [fullPath pathExtension], nil);
                 }
             }];
         } else if (textProvider) {

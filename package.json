@@ -1,24 +1,24 @@
 {
-  "name": "react-native-share-extension",
-  "version": "2.0.0",
-  "description": "share extension using react-native for both ios and android",
+  "name": "rn-share-extension",
+  "version": "1.0.0",
+  "description": "Share-Extension using react-native for both ios and android",
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:alinz/react-native-share-extension.git"
+    "url": "https://github.com/djorkaeffalexandre/rn-share-extension"
   },
   "keywords": ["react-component", "react-native", "share-extension"],
   "author": {
-    "name": "Ali Najafizadeh",
-    "email": "a.najafizadeh@gmail.com",
-    "url": "http://github.com/alinz"
+    "name": "Djorkaeff Alexandre",
+    "email": "djorkaeff.unb@gmail.com",
+    "url": "http://github.com/djorkaeffalexandre"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/alinz/react-native-share-extension"
+    "url": "https://github.com/djorkaeffalexandre/rn-share-extension"
   },
-  "homepage": "https://github.com/alinz/react-native-share-extension"
+  "homepage": "https://github.com/djorkaeffalexandre/rn-share-extension"
 }
