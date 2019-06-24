@@ -9,6 +9,10 @@ Fork from: [react-native-share-extension](https://github.com/alinz/react-native-
     <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/android-demo.gif" />
 </p>
 
+# Example
+
+[RN-Extensions-Share](https://github.com/djorkaeffalexandre/share-extension)
+
 # Installation
 
 Installation should be very easy by just installing it from npm.
@@ -31,7 +35,7 @@ The setup requires a little bit more work. I will try to describe as detail as p
 - Click on `+` sign
 
 <p align="center">
-    <img src ="https://raw.githubusercontent.com/alinz/react-native-share-extension/master/assets/ios_step_01.png" />
+    <img src ="https://github.com/RocketChat/rn-extensions-share/blob/master/assets/ios_step_01.png?raw=true" />
 </p>
 
 - Select `Share Extension` under `iOS > Application Extension`
@@ -559,7 +563,7 @@ Steps needed to open the host application from the share extension.
 Then you can open your app from the share extension by calling openURL:
 
 ```
-import ShareExtension from 'react-native-share-extension';
+import ShareExtension from 'rn-extensions-share';
 
 ShareExtension.openURL('sample://example/url');
 ```

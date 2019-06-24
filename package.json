@@ -1,6 +1,6 @@
 {
   "name": "rn-extensions-share",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Share-Extension using react-native for both ios and android",
   "main": "lib/index.js",
   "scripts": {
@@ -8,9 +8,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/djorkaeffalexandre/rn-extensions-share"
+    "url": "https://github.com/RocketChat/rn-extensions-share"
   },
-  "keywords": ["react-component", "react-native", "share-extension"],
+  "keywords": [
+    "react-component",
+    "react-native",
+    "share-extension"
+  ],
   "author": {
     "name": "Djorkaeff Alexandre",
     "email": "djorkaeffalexandre@gmail.com",
@@ -18,7 +22,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/djorkaeffalexandre/rn-extensions-share"
+    "url": "https://github.com/RocketChat/rn-extensions-share"
   },
-  "homepage": "https://github.com/djorkaeffalexandre/rn-extensions-share"
+  "homepage": "https://github.com/RocketChat/rn-extensions-share"
 }
