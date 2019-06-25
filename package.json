@@ -1,6 +1,6 @@
 {
   "name": "rn-extensions-share",
-  "version": "2.0.1",
+  "version": "2.1.1",
   "description": "Share-Extension using react-native for both ios and android",
   "main": "lib/index.js",
   "scripts": {
