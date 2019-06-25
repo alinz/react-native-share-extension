@@ -5,6 +5,8 @@
 #define URL_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
 #define TEXT_IDENTIFIER (NSString *)kUTTypePlainText
+#define VIDEO_IDENTIFIER (NSString *)kUTTypeVideo
+#define MOVIE_IDENTIFIER (NSString *)kUTTypeMovie
 
 NSExtensionContext* extensionContext;
 
@@ -76,6 +78,9 @@ RCT_REMAP_METHOD(data,
         __block NSItemProvider *urlProvider = nil;
         __block NSItemProvider *imageProvider = nil;
         __block NSItemProvider *textProvider = nil;
+        __block NSItemProvider *videoProvider = nil;
+
+        __block NSString *typeIdentifierVideo;
 
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
             if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
@@ -86,6 +91,14 @@ RCT_REMAP_METHOD(data,
                 *stop = YES;
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
+                *stop = YES;
+            } else if ([provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER]){
+                videoProvider = provider;
+                typeIdentifierVideo = VIDEO_IDENTIFIER;
+                *stop = YES;
+            } else if ([provider hasItemConformingToTypeIdentifier:MOVIE_IDENTIFIER]){
+                videoProvider = provider;
+                typeIdentifierVideo = MOVIE_IDENTIFIER;
                 *stop = YES;
             }
         }];
@@ -128,6 +141,14 @@ RCT_REMAP_METHOD(data,
 
                 if(callback) {
                     callback(text, @"text/plain", nil);
+                }
+            }];
+        } else if (videoProvider) {
+            [videoProvider loadItemForTypeIdentifier:typeIdentifierVideo options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                NSURL *url = (NSURL *)item;
+
+                if(callback) {
+                    callback([url absoluteString], @"file", nil);
                 }
             }];
         } else {
