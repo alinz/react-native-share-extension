@@ -107,8 +107,9 @@ RCT_REMAP_METHOD(data,
             [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
 
+                NSString *type = ([[[url absoluteString] pathExtension]  isEqualToString:@""]) ? @"text" : @"media";
                 if(callback) {
-                    callback([url absoluteString], @"text/plain", nil);
+                    callback([url absoluteString], type, nil);
                 }
             }];
         } else if (imageProvider) {
@@ -132,7 +133,7 @@ RCT_REMAP_METHOD(data,
                 
                 path = [NSString stringWithFormat:@"%@%@", @"file://", fullPath];
                 if(callback) {
-                    callback(path, [fullPath pathExtension], nil);
+                    callback(path, @"media", nil);
                 }
             }];
         } else if (textProvider) {
@@ -140,7 +141,7 @@ RCT_REMAP_METHOD(data,
                 NSString *text = (NSString *)item;
 
                 if(callback) {
-                    callback(text, @"text/plain", nil);
+                    callback(text, @"text", nil);
                 }
             }];
         } else if (videoProvider) {
@@ -148,7 +149,7 @@ RCT_REMAP_METHOD(data,
                 NSURL *url = (NSURL *)item;
 
                 if(callback) {
-                    callback([url absoluteString], @"file", nil);
+                    callback([url absoluteString], @"media", nil);
                 }
             }];
         } else {
