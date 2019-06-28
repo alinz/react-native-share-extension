@@ -106,8 +106,8 @@ RCT_REMAP_METHOD(data,
         if(urlProvider) {
             [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
-
-                NSString *type = ([[[url absoluteString] pathExtension]  isEqualToString:@""]) ? @"text" : @"media";
+                
+                NSString *type = ([[[url absoluteString] pathExtension]  isEqualToString:@""]) || [url.scheme containsString:@"http"] ? @"text" : @"media";
                 if(callback) {
                     callback([url absoluteString], type, nil);
                 }
