@@ -118,8 +118,6 @@ RCT_REMAP_METHOD(data,
                 NSString *fullPath = nil;
                 NSString *path = nil;
 
-                NSLog(@"[ITEM]: %@", (NSURL *)item);
-
                 if ([(NSObject *)item isKindOfClass:[UIImage class]]){
                     sharedImage = (UIImage *)item;
                     fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"image.png"];
