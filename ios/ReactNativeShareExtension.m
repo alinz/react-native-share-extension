@@ -37,7 +37,6 @@ RCT_EXPORT_MODULE();
     self.view = rootView;
 }
 
-
 RCT_EXPORT_METHOD(close) {
     [extensionContext completeRequestReturningItems:nil
                                   completionHandler:nil];
@@ -119,21 +118,25 @@ RCT_REMAP_METHOD(data,
                 NSString *fullPath = nil;
                 NSString *path = nil;
 
+                NSLog(@"[ITEM]: %@", (NSURL *)item);
+
                 if ([(NSObject *)item isKindOfClass:[UIImage class]]){
                     sharedImage = (UIImage *)item;
                     fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"image.png"];
+                    [UIImagePNGRepresentation(sharedImage) writeToFile:fullPath atomically:YES];
+                    path = [NSString stringWithFormat:@"%@%@", @"file://", fullPath];
+                    if(callback) {
+                        callback(path, @"media", nil);
+                    }
                 }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
                     NSURL* url = (NSURL *)item;
-                    fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:url.lastPathComponent];
-                    NSData *data = [NSData dataWithContentsOfURL:url];
-                    sharedImage = [UIImage imageWithData:data];
+                    if(callback) {
+                        callback([url absoluteString], @"media", nil);
+                    }
                 }
-                
-                [UIImagePNGRepresentation(sharedImage) writeToFile:fullPath atomically:YES];
-                
-                path = [NSString stringWithFormat:@"%@%@", @"file://", fullPath];
+
                 if(callback) {
-                    callback(path, @"media", nil);
+                    callback(@"", @"media", nil);
                 }
             }];
         } else if (textProvider) {
