@@ -82,18 +82,29 @@ RCT_REMAP_METHOD(data,
         __block NSItemProvider *textProvider = nil;
 
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
+            // Change: 04-07-2019, Jordy van den Aardweg
+            // "*stop = YES;" is commented out because some apps share "text" ánd a "url".
+            // If we just want the "url" in that scenario, but the "text" is the first attachment, 
+            // we could never get the URL with *stop = YES; enabled. As this will stop at the "text" part.
             if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
                 urlProvider = provider;
-                *stop = YES;
+                // *stop = YES;
             } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
                 textProvider = provider;
-                *stop = YES;
+                // *stop = YES;
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
-                *stop = YES;
+                // *stop = YES;
             }
         }];
-
+        
+        // Change: 04-07-2019, Jordy van den Aardweg
+        // In below's if else if statements we have changed the order, from:
+        // urlProvider, imageProvider, textProvider
+        // to
+        // urlProvider, textProvider, imageProvider
+        // Because our App just needs an URL. The URL could also be available als text
+        // We don't really care about the image, so we placed that last.
         if(urlProvider) {
             [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
@@ -102,20 +113,20 @@ RCT_REMAP_METHOD(data,
                     callback([url absoluteString], @"text/plain", nil);
                 }
             }];
-        } else if (imageProvider) {
-            [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                NSURL *url = (NSURL *)item;
-
-                if(callback) {
-                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
-                }
-            }];
         } else if (textProvider) {
             [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSString *text = (NSString *)item;
 
                 if(callback) {
                     callback(text, @"text/plain", nil);
+                }
+            }];
+        } else if (imageProvider) {
+            [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                NSURL *url = (NSURL *)item;
+
+                if(callback) {
+                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
                 }
             }];
         } else {
