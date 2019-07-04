@@ -68,8 +68,8 @@ public class ShareModule extends ReactContextBaseJavaModule {
         type = "";
       }
 
-      map.putString("type", type);
-      map.putString("value",value);
+      map.putString("type", (type == "text/plain" ? "text" : "media"));
+      map.putString("value", value);
 
       return map;
   }
