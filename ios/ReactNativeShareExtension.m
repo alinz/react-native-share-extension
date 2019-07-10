@@ -88,7 +88,10 @@ RCT_REMAP_METHOD(data,
             // "*stop = YES;" is commented out because some apps share "text" ánd a "url".
             // If we just want the "url" in that scenario, but the "text" is the first attachment, 
             // we could never get the URL with *stop = YES; enabled. As this will stop at the "text" part.
-            if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
+            if ([provider hasItemConformingToTypeIdentifier:HTML_IDENTIFIER]){
+                htmlProvider = provider;
+                // *stop = YES;
+            } else if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
                 urlProvider = provider;
                 // *stop = YES;
             } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
@@ -96,9 +99,6 @@ RCT_REMAP_METHOD(data,
                 // *stop = YES;
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
-                // *stop = YES;
-            } else if ([provider hasItemConformingToTypeIdentifier:HTML_IDENTIFIER]){
-                htmlProvider = provider;
                 // *stop = YES;
             }
         }];
@@ -114,9 +114,10 @@ RCT_REMAP_METHOD(data,
         if(htmlProvider) {
             [htmlProvider loadItemForTypeIdentifier:HTML_IDENTIFIER options:nil completionHandler:^(NSDictionary *jsDict, NSError *error) {
                 NSDictionary *jsPreprocessingResults = jsDict[NSExtensionJavaScriptPreprocessingResultsKey];
-
+                NSString *document = jsPreprocessingResults[@"document"];
+    
                 if(callback) {
-                    callback(jsPreprocessingResults, @"text/plain", nil);
+                    callback(document, @"text/plain", nil);
                 }
             }];
         } else if(urlProvider) {
