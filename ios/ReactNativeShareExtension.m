@@ -5,6 +5,7 @@
 #define URL_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
 #define TEXT_IDENTIFIER (NSString *)kUTTypePlainText
+#define HTML_IDENTIFIER (NSString *)kUTTypePropertyList
 
 NSExtensionContext* extensionContext;
 
@@ -80,7 +81,8 @@ RCT_REMAP_METHOD(data,
         __block NSItemProvider *urlProvider = nil;
         __block NSItemProvider *imageProvider = nil;
         __block NSItemProvider *textProvider = nil;
-
+        __block NSItemProvider *htmlProvider = nil;
+        
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
             // Change: 04-07-2019, Jordy van den Aardweg
             // "*stop = YES;" is commented out because some apps share "text" ánd a "url".
@@ -95,6 +97,9 @@ RCT_REMAP_METHOD(data,
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
                 // *stop = YES;
+            } else if ([provider hasItemConformingToTypeIdentifier:HTML_IDENTIFIER]){
+                htmlProvider = provider;
+                // *stop = YES;
             }
         }];
         
@@ -105,7 +110,16 @@ RCT_REMAP_METHOD(data,
         // urlProvider, textProvider, imageProvider
         // Because our App just needs an URL. The URL could also be available als text
         // We don't really care about the image, so we placed that last.
-        if(urlProvider) {
+        
+        if(htmlProvider) {
+            [htmlProvider loadItemForTypeIdentifier:HTML_PROVIDER options:nil completionHandler:^(NSDictionary *jsDict, NSError *error) {
+                NSDictionary *jsPreprocessingResults = jsDict[NSExtensionJavaScriptPreprocessingResultsKey]
+
+                if(callback) {
+                    callback(jsPreprocessingResults, @"text/plain", nil);
+                }
+            }];
+        } else if(urlProvider) {
             [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
 
