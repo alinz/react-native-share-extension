@@ -1,4 +1,4 @@
-package com.alinz.parkerdan.shareextension;
+package com.djorkaeff.alexandre.shareextension;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -24,9 +24,7 @@ public class RealPathUtil {
 
         final boolean isKitKatOrNewer = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
-        // DocumentProvider
         if (isKitKatOrNewer && DocumentsContract.isDocumentUri(context, uri)) {
-            // ExternalStorageProvider
             if (isExternalStorageDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
@@ -36,8 +34,6 @@ public class RealPathUtil {
                     return Environment.getExternalStorageDirectory() + "/" + split[1];
                 }
             } else if (isDownloadsDocument(uri)) {
-                // DownloadsProvider
-
                 final String id = DocumentsContract.getDocumentId(uri);
                 if (!TextUtils.isEmpty(id)) {
                     if (id.startsWith("raw:")) {
@@ -51,8 +47,6 @@ public class RealPathUtil {
                     }
                 }
             } else if (isMediaDocument(uri)) {
-                // MediaProvider
-
                 final String docId = DocumentsContract.getDocumentId(uri);
                 final String[] split = docId.split(":");
                 final String type = split[0];
@@ -76,13 +70,9 @@ public class RealPathUtil {
         }
 
         if ("content".equalsIgnoreCase(uri.getScheme())) {
-            // MediaStore (and general)
-
             if (isGooglePhotosUri(uri)) {
                 return uri.getLastPathSegment();
             }
-
-            // Try save to tmp file, and return tmp file path
             return getPathFromSavingTempFile(context, uri);
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
             return uri.getPath();
@@ -95,7 +85,6 @@ public class RealPathUtil {
         File tmpFile;
         String fileName = null;
 
-        // Try and get the filename from the Uri
         try {
             Cursor returnCursor =
                     context.getContentResolver().query(uri, null, null, null, null);
@@ -103,7 +92,7 @@ public class RealPathUtil {
             returnCursor.moveToFirst();
             fileName = returnCursor.getString(nameIndex);
         } catch (Exception e) {
-            // just continue to get the filename with the last segment of the path
+            // continue to get filename
         }
 
         try {
@@ -183,7 +172,6 @@ public class RealPathUtil {
         if (dot >= 0) {
             return uri.substring(dot);
         } else {
-            // No extension.
             return "";
         }
     }

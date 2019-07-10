@@ -1,4 +1,4 @@
-package com.alinz.parkerdan.shareextension;
+package com.djorkaeff.alexandre.shareextension;
 
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
