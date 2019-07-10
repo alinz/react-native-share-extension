@@ -112,8 +112,8 @@ RCT_REMAP_METHOD(data,
         // We don't really care about the image, so we placed that last.
         
         if(htmlProvider) {
-            [htmlProvider loadItemForTypeIdentifier:HTML_PROVIDER options:nil completionHandler:^(NSDictionary *jsDict, NSError *error) {
-                NSDictionary *jsPreprocessingResults = jsDict[NSExtensionJavaScriptPreprocessingResultsKey]
+            [htmlProvider loadItemForTypeIdentifier:HTML_IDENTIFIER options:nil completionHandler:^(NSDictionary *jsDict, NSError *error) {
+                NSDictionary *jsPreprocessingResults = jsDict[NSExtensionJavaScriptPreprocessingResultsKey];
 
                 if(callback) {
                     callback(jsPreprocessingResults, @"text/plain", nil);
