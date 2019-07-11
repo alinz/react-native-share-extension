@@ -1,5 +1,5 @@
 # React Native Share Extension
-This fork includes some changes to the [original alinz/react-native-share-extension](https://github.com/alinz/react-native-share-extension).
+This fork includes some changes to the [original alinz/react-native-share-extension](https://github.com/alinz/react-native-share-extension) for my specific use case; getting URL's and document HTML from a page.
 
 ## Changes:
 - Uses a `ExtensionPreprocessingJS` (GetDocumentData.js) to get the: url, title and html from a webpage
