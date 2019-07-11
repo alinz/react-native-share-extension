@@ -108,7 +108,7 @@ RCT_REMAP_METHOD(data,
             [dataProvider loadItemForTypeIdentifier:DATA_IDENTIFIER options:nil completionHandler:^(NSDictionary *item, NSError *error) {
                 NSDictionary *results = (NSDictionary *)item;
                 NSDictionary *jsPreprocessingResults = results[NSExtensionJavaScriptPreprocessingResultsKey];
-                NSString *documentData = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"data"];
+                NSString *documentData = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"documentData"];
                 // See /ios/PlaypostShareExtension/GetDocumentData.js for which data we get
 
                 if(callback) {
