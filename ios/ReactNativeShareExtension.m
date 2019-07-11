@@ -5,7 +5,7 @@
 #define URL_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
 #define TEXT_IDENTIFIER (NSString *)kUTTypePlainText
-#define HTML_IDENTIFIER (NSString *)kUTTypePropertyList
+#define DATA_IDENTIFIER (NSString *)kUTTypePropertyList
 
 NSExtensionContext* extensionContext;
 
@@ -13,6 +13,11 @@ NSExtensionContext* extensionContext;
     NSTimer *autoTimer;
     NSString* type;
     NSString* value;
+}
+
+- (BOOL)isContentValid {
+    // Do validation of contentText and/or NSExtensionContext attachments here
+    return YES;
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -32,6 +37,9 @@ RCT_EXPORT_MODULE();
     //object variable for extension doesn't work for react-native. It must be assign to gloabl
     //variable extensionContext. in this way, both exported method can touch extensionContext
     extensionContext = self.extensionContext;
+
+    NSLog(@"extensionContext");
+        NSLog(@"%@", self.extensionContext.inputItems);
 
     UIView *rootView = [self shareView];
     if (rootView.backgroundColor == nil) {
@@ -75,49 +83,43 @@ RCT_REMAP_METHOD(data,
 
 - (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSString *value, NSString* contentType, NSException *exception))callback {
     @try {
-        NSExtensionItem *item = [context.inputItems firstObject];
-        NSArray *attachments = item.attachments;
 
-        __block NSItemProvider *urlProvider = nil;
-        __block NSItemProvider *imageProvider = nil;
-        __block NSItemProvider *textProvider = nil;
-        __block NSItemProvider *htmlProvider = nil;
-        
-        [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
-            // Change: 04-07-2019, Jordy van den Aardweg
-            // "*stop = YES;" is commented out because some apps share "text" ánd a "url".
-            // If we just want the "url" in that scenario, but the "text" is the first attachment, 
-            // we could never get the URL with *stop = YES; enabled. As this will stop at the "text" part.
-            if ([provider hasItemConformingToTypeIdentifier:HTML_IDENTIFIER]){
-                htmlProvider = provider;
-                // *stop = YES;
+       NSItemProvider *urlProvider = nil;
+       NSItemProvider *imageProvider = nil;
+       NSItemProvider *textProvider = nil;
+       NSItemProvider *dataProvider = nil;
+
+        for (NSExtensionItem *item in context.inputItems) {
+          for (NSItemProvider *provider in item.attachments) {
+            if ([provider hasItemConformingToTypeIdentifier:DATA_IDENTIFIER]){
+                dataProvider = provider;
+                // break;
             } else if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
                 urlProvider = provider;
-                // *stop = YES;
+                // break;
             } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
                 textProvider = provider;
-                // *stop = YES;
+                // break;
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
-                // *stop = YES;
+                // break;
             }
-        }];
-        
-        // Change: 04-07-2019, Jordy van den Aardweg
-        // In below's if else if statements we have changed the order, from:
-        // urlProvider, imageProvider, textProvider
-        // to
-        // urlProvider, textProvider, imageProvider
-        // Because our App just needs an URL. The URL could also be available als text
-        // We don't really care about the image, so we placed that last.
-        
-        if(htmlProvider) {
-            [htmlProvider loadItemForTypeIdentifier:HTML_IDENTIFIER options:nil completionHandler:^(NSDictionary *jsDict, NSError *error) {
-                NSDictionary *jsPreprocessingResults = jsDict[NSExtensionJavaScriptPreprocessingResultsKey];
-                NSString *document = jsPreprocessingResults[@"document"];
-    
+          }
+        }
+
+        if(dataProvider) {
+            [dataProvider loadItemForTypeIdentifier:DATA_IDENTIFIER options:nil completionHandler:^(NSDictionary *item, NSError *error) {
+                NSDictionary *results = (NSDictionary *)item;
+                NSDictionary *jsPreprocessingResults = results[NSExtensionJavaScriptPreprocessingResultsKey];
+                NSString *document = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"document"];
+                NSString *url = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"url"];
+                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsPreprocessingResults
+                                                   options:0 // Pass 0 if you don't care about the readability of the generated string
+                                                     error:&error];
+                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+
                 if(callback) {
-                    callback(document, @"text/plain", nil);
+                    callback(jsonString, @"text/json", nil);
                 }
             }];
         } else if(urlProvider) {
