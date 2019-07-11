@@ -84,10 +84,10 @@ RCT_REMAP_METHOD(data,
 - (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSString *value, NSString* contentType, NSException *exception))callback {
     @try {
 
-       NSItemProvider *urlProvider = nil;
-       NSItemProvider *imageProvider = nil;
-       NSItemProvider *textProvider = nil;
-       NSItemProvider *dataProvider = nil;
+        NSItemProvider *urlProvider = nil;
+        NSItemProvider *imageProvider = nil;
+        NSItemProvider *textProvider = nil;
+        NSItemProvider *dataProvider = nil;
 
         for (NSExtensionItem *item in context.inputItems) {
           for (NSItemProvider *provider in item.attachments) {
@@ -111,15 +111,11 @@ RCT_REMAP_METHOD(data,
             [dataProvider loadItemForTypeIdentifier:DATA_IDENTIFIER options:nil completionHandler:^(NSDictionary *item, NSError *error) {
                 NSDictionary *results = (NSDictionary *)item;
                 NSDictionary *jsPreprocessingResults = results[NSExtensionJavaScriptPreprocessingResultsKey];
-                NSString *document = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"document"];
-                NSString *url = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"url"];
-                NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsPreprocessingResults
-                                                   options:0 // Pass 0 if you don't care about the readability of the generated string
-                                                     error:&error];
-                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                NSString *documentData = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"data"];
+                // See /ios/ShareExtension/GetDocumentData.js for which data we get
 
                 if(callback) {
-                    callback(jsonString, @"text/json", nil);
+                    callback(documentData, @"text/json", nil);
                 }
             }];
         } else if(urlProvider) {
