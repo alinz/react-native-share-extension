@@ -38,9 +38,6 @@ RCT_EXPORT_MODULE();
     //variable extensionContext. in this way, both exported method can touch extensionContext
     extensionContext = self.extensionContext;
 
-    NSLog(@"extensionContext");
-        NSLog(@"%@", self.extensionContext.inputItems);
-
     UIView *rootView = [self shareView];
     if (rootView.backgroundColor == nil) {
         rootView.backgroundColor = [[UIColor alloc] initWithRed:1 green:1 blue:1 alpha:0.1];
@@ -112,7 +109,7 @@ RCT_REMAP_METHOD(data,
                 NSDictionary *results = (NSDictionary *)item;
                 NSDictionary *jsPreprocessingResults = results[NSExtensionJavaScriptPreprocessingResultsKey];
                 NSString *documentData = [[results objectForKey:NSExtensionJavaScriptPreprocessingResultsKey] objectForKey:@"data"];
-                // See /ios/ShareExtension/GetDocumentData.js for which data we get
+                // See /ios/PlaypostShareExtension/GetDocumentData.js for which data we get
 
                 if(callback) {
                     callback(documentData, @"text/json", nil);
