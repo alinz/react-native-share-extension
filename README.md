@@ -1,8 +1,69 @@
 # React Native Share Extension
 
 Diff with: https://github.com/alinz/react-native-share-extension
-- Uses a ExtensionPreprocessingJS to get the: url, title and html from a webpage
-- Prefer the URL, if not webpage is loaded
+- Uses a ExtensionPreprocessingJS to get the: url, title and html from a webpage using `dataProvider` in `/react-native-share-extension/ios/ReactNativeShareExtension.m`
+- Prefer the URL if no webpage is loaded
+- Info.plist changes
+
+
+/ios/ShareExtension/GetDocumentData.js
+(make sure you add this file through xcode, or else it does not get included in the build)
+
+```javascript
+// prettier-ignore
+/* eslint-disable */
+var GetDocumentData = function() {};
+
+GetDocumentData.prototype = {
+  run: function(arguments) {
+    var documentUrl = document.URL;
+    var documentOuterHTML = document.documentElement.outerHTML;
+    var documentTitle = document.title;
+
+    var data = {
+      url: documentUrl,
+      html: documentOuterHTML,
+      title: documentTitle
+    }
+
+    var documentData = JSON.stringify(data);
+
+    arguments.completionFunction({ "documentData": documentData });
+  }
+};
+
+var ExtensionPreprocessingJS = new GetDocumentData;
+
+```
+
+/ios/ShareExtension/Info.plist
+```
+<key>NSExtension</key>
+<dict>
+  <key>NSExtensionAttributes</key>
+  <dict>
+    <key>NSExtensionActivationRule</key>
+    <dict>
+      <key>NSExtensionActivationDictionaryVersion</key>
+      <integer>2</integer>
+      <key>NSExtensionActivationSupportsText</key>
+      <true />
+      <key>NSExtensionActivationSupportsWebPageWithMaxCount</key>
+      <integer>1</integer>
+      <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+      <integer>1</integer>
+    </dict>
+    <key>NSExtensionJavaScriptPreprocessingFile</key>
+    <string>GetDocumentData</string>
+  </dict>
+  <key>NSExtensionMainStoryboard</key>
+  <string>MainInterface</string>
+  <key>NSExtensionPointIdentifier</key>
+  <string>com.apple.share-services</string>
+</dict>
+```
+
+# Original Readme:
 
 This is a helper module which brings react native as an engine to drive share extension for your app.
 
