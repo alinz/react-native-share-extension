@@ -1,5 +1,9 @@
 # React Native Share Extension
 
+Diff with: https://github.com/alinz/react-native-share-extension
+- Uses a ExtensionPreprocessingJS to get the: url, title and html from a webpage
+- Prefer the URL, if not webpage is loaded
+
 This is a helper module which brings react native as an engine to drive share extension for your app.
 
 <p align="center">
