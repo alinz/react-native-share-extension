@@ -1,12 +1,15 @@
 # React Native Share Extension
+This fork includes some changes to the [original alinz/react-native-share-extension](https://github.com/alinz/react-native-share-extension).
 
-Diff with: https://github.com/alinz/react-native-share-extension
-- Uses a ExtensionPreprocessingJS to get the: url, title and html from a webpage using `dataProvider` in `/react-native-share-extension/ios/ReactNativeShareExtension.m`
-- Prefer the URL if no webpage is loaded
-- Info.plist changes
+## Changes:
+- Uses a `ExtensionPreprocessingJS` (GetDocumentData.js) to get the: url, title and html from a webpage using
+- Changes to `ReactNativeShareExtension` to get the data from ExtensionPreprocessingJS
+- Prefers the URL if no webpage is loaded
+- Info.plist changes so it uses `ExtensionPreprocessingJS`
 
 
-/ios/ShareExtension/GetDocumentData.js
+**/ios/ShareExtension/GetDocumentData.js**
+
 (make sure you add this file through xcode, or else it does not get included in the build)
 
 ```javascript
@@ -36,7 +39,7 @@ var ExtensionPreprocessingJS = new GetDocumentData;
 
 ```
 
-/ios/ShareExtension/Info.plist
+**/ios/ShareExtension/Info.plist**
 ```
 <key>NSExtension</key>
 <dict>
