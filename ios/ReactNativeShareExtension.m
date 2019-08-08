@@ -99,10 +99,33 @@ RCT_REMAP_METHOD(data,
             }];
         } else if (imageProvider) {
             [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                NSURL *url = (NSURL *)item;
+                
+                /**
+                 * Save the image to NSTemporaryDirectory(), which cleans itself tri-daily.
+                 * This is necessary as the iOS 11 screenshot editor gives us a UIImage, while
+                 * sharing from Photos and similar apps gives us a URL
+                 * Therefore the solution is to save a UIImage, either way, and return the local path to that temp UIImage
+                 * This path will be sent to React Native and can be processed and accessed RN side.
+                **/
 
+                UIImage *sharedImage;
+                NSString *filePath = nil;
+                NSString *fullPath = nil;
+
+                if ([(NSObject *)item isKindOfClass:[UIImage class]]){
+                    sharedImage = (UIImage *)item;
+                    fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"Image.png"];
+                }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
+                    NSURL* url = (NSURL *)item;
+                    fullPath = [NSTemporaryDirectory() stringByAppendingPathComponent:url.lastPathComponent];
+                    NSData *data = [NSData dataWithContentsOfURL:url];
+                    sharedImage = [UIImage imageWithData:data];
+                }
+                
+                [UIImagePNGRepresentation(sharedImage) writeToFile:fullPath atomically:YES];
+                
                 if(callback) {
-                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
+                    callback(fullPath, [fullPath pathExtension], nil);
                 }
             }];
         } else if (textProvider) {
