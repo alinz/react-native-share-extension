@@ -1,5 +1,5 @@
 {
-  "name": "react-native-share-extension",
+  "name": "react-native-file-share-extension",
   "version": "2.0.0",
   "description": "share extension using react-native for both ios and android",
   "main": "lib/index.js",

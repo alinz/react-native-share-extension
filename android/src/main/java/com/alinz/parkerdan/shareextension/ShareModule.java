@@ -12,65 +12,68 @@ import android.content.Intent;
 import android.net.Uri;
 
 import android.graphics.Bitmap;
+
 import java.io.InputStream;
 
 
 public class ShareModule extends ReactContextBaseJavaModule {
 
 
-  public ShareModule(ReactApplicationContext reactContext) {
-      super(reactContext);
-  }
+    public ShareModule(ReactApplicationContext reactContext) {
+        super(reactContext);
+    }
 
-  @Override
-  public String getName() {
-      return "ReactNativeShareExtension";
-  }
+    @Override
+    public String getName() {
+        return "ReactNativeShareExtension";
+    }
 
-  @ReactMethod
-  public void close() {
-    getCurrentActivity().finish();
-  }
+    @ReactMethod
+    public void close() {
+        getCurrentActivity().finish();
+    }
 
-  @ReactMethod
-  public void data(Promise promise) {
-      promise.resolve(processIntent());
-  }
+    @ReactMethod
+    public void data(Promise promise) {
+        promise.resolve(processIntent());
+    }
 
-  public WritableMap processIntent() {
-      WritableMap map = Arguments.createMap();
+    public WritableMap processIntent() {
+        WritableMap map = Arguments.createMap();
 
-      String value = "";
-      String type = "";
-      String action = "";
+        String value = "";
+        String type = "";
+        String action = "";
 
-      Activity currentActivity = getCurrentActivity();
+        Activity currentActivity = getCurrentActivity();
 
-      if (currentActivity != null) {
-        Intent intent = currentActivity.getIntent();
-        action = intent.getAction();
-        type = intent.getType();
-        if (type == null) {
-          type = "";
+        if (currentActivity != null) {
+            Intent intent = currentActivity.getIntent();
+            action = intent.getAction();
+            type = intent.getType();
+            if (type == null) {
+                type = "";
+            }
+            if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
+                value = intent.getStringExtra(Intent.EXTRA_TEXT);
+            } else if (Intent.ACTION_SEND.equals(action) && ("image/*".equals(type) || "image/jpeg".equals(type) || "image/png".equals(type) || "image/jpg".equals(type))) {
+                Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri, type);
+            } else if (Intent.ACTION_SEND.equals(action) && ("application/pdf".equals(type))) {
+                Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri, type);
+
+            } else {
+                value = "";
+            }
+        } else {
+            value = "";
+            type = "";
         }
-        if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
-          value = intent.getStringExtra(Intent.EXTRA_TEXT);
-        }
-        else if (Intent.ACTION_SEND.equals(action) && ("image/*".equals(type) || "image/jpeg".equals(type) || "image/png".equals(type) || "image/jpg".equals(type) ) ) {
-          Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-         value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
 
-       } else {
-         value = "";
-       }
-      } else {
-        value = "";
-        type = "";
-      }
+        map.putString("type", type);
+        map.putString("value", value);
 
-      map.putString("type", type);
-      map.putString("value",value);
-
-      return map;
-  }
+        return map;
+    }
 }
