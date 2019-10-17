@@ -1,5 +1,15 @@
 # React Native Share Extension
 
+This Module was originally forked from https://github.com/alinz/react-native-share-extension and was modified in order to share pdf files with your host app by using AppGroups.
+
+## TODO!
+| What I have to do?  | Status |
+| ------------- | ------------- |
+| Support pdf  | :white_check_mark:  |
+| New README  | :heavy_multiplication_x: |
+| New Example app  | :heavy_multiplication_x:  |
+| Support another doc types  | :heavy_multiplication_x: |
+
 This is a helper module which brings react native as an engine to drive share extension for your app.
 
 <p align="center">
