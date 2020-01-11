@@ -38,11 +38,27 @@ public class RealPathUtil {
          // DownloadsProvider
          else if (isDownloadsDocument(uri)) {
 
-             final String id = DocumentsContract.getDocumentId(uri);
-             final Uri contentUri = ContentUris.withAppendedId(
-                     Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+            String fileName = getFilePath(context, uri);
+            if (fileName != null) {
+                return Environment.getExternalStorageDirectory().toString() + "/Download/" + fileName;
+            }
 
-             return getDataColumn(context, contentUri, null, null);
+            String id = DocumentsContract.getDocumentId(uri);
+            if (id.startsWith("raw:")) {
+                id = id.replaceFirst("raw:", "");
+                File file = new File(id);
+                if (file.exists())
+                    return id;
+            }
+
+            final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+            return getDataColumn(context, contentUri, null, null);
+
+            //  final String id = DocumentsContract.getDocumentId(uri);
+            //  final Uri contentUri = ContentUris.withAppendedId(
+            //          Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+
+            //  return getDataColumn(context, contentUri, null, null);
          }
          // MediaProvider
          else if (isMediaDocument(uri)) {
@@ -150,6 +166,27 @@ public class RealPathUtil {
     }
 
     return getDataColumn(context, uri, null, null);
+ }
+
+ public static String getFilePath(Context context, Uri uri) {
+
+    Cursor cursor = null;
+    final String[] projection = {
+            MediaStore.MediaColumns.DISPLAY_NAME
+    };
+
+    try {
+        cursor = context.getContentResolver().query(uri, projection, null, null,
+                null);
+        if (cursor != null && cursor.moveToFirst()) {
+            final int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME);
+            return cursor.getString(index);
+        }
+    } finally {
+        if (cursor != null)
+            cursor.close();
+    }
+    return null;
  }
 
  /**
