@@ -40,7 +40,7 @@ public class ShareModule extends ReactContextBaseJavaModule {
 		promise.resolve(processIntent());
 	}
 
-	public WritableMap processIntent() {
+	public WritableArray processIntent() {
 		WritableArray dataArrayMap = Arguments.createArray();
 		Set<String> mediaTypesSupported = new HashSet<String>();
 		mediaTypesSupported.add("video");
