@@ -14,6 +14,10 @@ import android.net.Uri;
 import android.graphics.Bitmap;
 import java.io.InputStream;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.ArrayList;
+
 public class ShareModule extends ReactContextBaseJavaModule {
 
 	public ShareModule(ReactApplicationContext reactContext) {
