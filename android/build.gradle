@@ -1,3 +1,7 @@
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
 buildscript {
   repositories {
     google()
@@ -12,12 +16,12 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-  compileSdkVersion 28
-  buildToolsVersion "29.0.0"
+  compileSdkVersion safeExtGet('compileSdkVersion', 28)
+  buildToolsVersion safeExtGet('buildToolsVersion', "29.0.0")
 
   defaultConfig {
-    minSdkVersion 19
-    targetSdkVersion 28
+    minSdkVersion safeExtGet('minSdkVersion', 19)
+    targetSdkVersion safeExtGet('targetSdkVersion', 28)
     versionCode 1
     versionName "1.0"
   }

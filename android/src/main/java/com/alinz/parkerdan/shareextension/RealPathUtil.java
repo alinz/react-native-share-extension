@@ -99,6 +99,8 @@ public class RealPathUtil {
 				final int index = cursor.getColumnIndexOrThrow(column);
 				return cursor.getString(index);
 			}
+		} catch (Exception e) {
+			return null;
 		} finally {
 			if (cursor != null)
 				cursor.close();
@@ -136,7 +138,7 @@ public class RealPathUtil {
 		if (isGoogleOldPhotosUri(uri)) {
 			// return http path, then download file.
 			return uri.getLastPathSegment();
-		} else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri)) {
+		} else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri) || isWhatsappFile(uri)) {
 			// copy from uri. context.getContentResolver().openInputStream(uri);
 			return copyFile(context, uri);
 		}
@@ -167,9 +169,9 @@ public class RealPathUtil {
 		// uri.getAuthority can be equal to "com.android.mms.file" and "mms"
 		return uri.getAuthority().contains("mms");
 	}
-	
+
 	public static boolean isWhatsappFile(Uri uri) {
-	    return "com.whatsapp.provider.media".equals(uri.getAuthority());
+		return "com.whatsapp.provider.media".equals(uri.getAuthority());
 	}
 
 	private static String copyFile(Context context, Uri uri) {
