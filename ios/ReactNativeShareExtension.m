@@ -124,7 +124,7 @@ RCT_REMAP_METHOD(data,
                         [UIImageJPEGRepresentation(sharedImage, 1.0) writeToFile:filePath atomically:YES];
                         type = @"image";
                     
-                    }else if([VideoIdentifier isEqualToString:VIDEO_IDENTIFIER_MPEG_4] && [(NSObject *)item isKindOfClass:[NSURL class]]){
+                    }else if(([VideoIdentifier isEqualToString:VIDEO_IDENTIFIER_MPEG_4] || [VideoIdentifier isEqualToString:VIDEO_IDENTIFIER_QUICK_TIME_MOVIE]) && [(NSObject *)item isKindOfClass:[NSURL class]]){
                         NSURL* url = (NSURL *)item;
                         filePath = [url absoluteString];
                         type = @"video";
