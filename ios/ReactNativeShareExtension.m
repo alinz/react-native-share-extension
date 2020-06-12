@@ -76,11 +76,14 @@ RCT_REMAP_METHOD(data,
 
         NSArray *attachments = item.attachments;
 
-        __block NSItemProvider *urlProvider = nil;
         __block NSItemProvider *imageProvider = nil;
         __block NSItemProvider *textProvider = nil;
         // __block NSItemProvider *videoProvider = nil;
         __block NSUInteger index = 0;
+        
+        // Formatter used for videos
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
 
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
             if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER] || [provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER_MPEG_4] || [provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER_QUICK_TIME_MOVIE]){
@@ -128,6 +131,18 @@ RCT_REMAP_METHOD(data,
                         NSURL* url = (NSURL *)item;
                         filePath = [url absoluteString];
                         type = @"video";
+
+                        // Get the timestamp from the file
+                        NSDate *fileDate;
+                        [url getResourceValue:&fileDate forKey:NSURLContentModificationDateKey error:&error];
+                        timestamp = [dateFormatter stringFromDate:fileDate];
+                        //NSLog(@"File Date:%@", timestamp);
+                        
+                        // Other way to get timestamp
+                        //NSError *err = nil;
+                        //NSDictionary *dic2 = [[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:&err];
+                        //NSLog(@"File modification Date:%@", dic2[NSFileModificationDate]);
+
                         // NSData *data = [NSData dataWithContentsOfURL:url];
                         //NSArray *keys = [NSArray arrayWithObjects:@"createDate",nil];
                         //NSArray *objs = [NSArray arrayWithObjects:@"createDate",nil];
@@ -191,19 +206,6 @@ RCT_REMAP_METHOD(data,
                         callback(itemArray, nil);
                     }
 
-                }];
-            } else if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
-                urlProvider = provider;
-                index += 1;
-                [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                    NSURL *url = (NSURL *)item;
-                    [itemArray addObject: @{
-                                            @"type": @"text/plain",
-                                            @"value": [url absoluteString]
-                                            }];
-                    if (callback && (index == [attachments count])) {
-                        callback(itemArray, nil);
-                    }
                 }];
             } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
                 textProvider = provider;
