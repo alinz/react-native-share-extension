@@ -78,7 +78,7 @@ fi
 # Path to react-native folder inside node_modules
 # REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Path to react-native folder inside src/native/utils/bin
-REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../node_modules/react-native" && pwd)"
+REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../node_modules/react-native" && pwd)"
 echo "REACT_NATIVE_DIR: $REACT_NATIVE_DIR"
 
 # Xcode project file for React Native apps is located in ios/ subfolder
