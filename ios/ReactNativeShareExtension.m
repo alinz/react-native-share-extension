@@ -162,9 +162,10 @@ RCT_REMAP_METHOD(data,
                         
                     } else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
                         NSURL* url = (NSURL *)item;
+                        filePath = [url absoluteString];
                         filename = [[url lastPathComponent] lowercaseString];
                         NSData *data = [NSData dataWithContentsOfURL:url];
-                        sharedImage = [UIImage imageWithData:data];
+                        //sharedImage = [UIImage imageWithData:data];
                         // get meta data for files
                         CGImageSourceRef source = CGImageSourceCreateWithData((CFMutableDataRef)data, NULL);
                         NSDictionary* metadata = (NSDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source,0,NULL));
@@ -176,8 +177,8 @@ RCT_REMAP_METHOD(data,
                             latitude = metadata[@"{GPS}"][@"Latitude"];
                             longitude =metadata[@"{GPS}"][@"Longitude"];
                         }
-                        filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
-                        [UIImageJPEGRepresentation(sharedImage, 1.0) writeToFile:filePath atomically:YES];
+                        //filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
+                        //[UIImageJPEGRepresentation(sharedImage, 1.0) writeToFile:filePath atomically:YES];
                         type = @"image";
                     }
                     
