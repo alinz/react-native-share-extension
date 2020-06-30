@@ -36,5 +36,5 @@ repositories {
 
 dependencies {
   implementation "com.facebook.react:react-native:+"
-  implementation "com.android.support:exifinterface:27.+"
+  implementation "androidx.exifinterface:exifinterface:1.2.0"
 }

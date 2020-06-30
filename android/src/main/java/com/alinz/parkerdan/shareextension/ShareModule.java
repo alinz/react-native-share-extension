@@ -18,6 +18,9 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.ArrayList;
+import androidx.exifinterface.media.ExifInterface;
+
+
 
 public class ShareModule extends ReactContextBaseJavaModule {
 
@@ -72,6 +75,7 @@ public class ShareModule extends ReactContextBaseJavaModule {
 				dataMap.putString("type", type);
 				Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
 				dataMap.putString("value", "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri));
+				dataMap.putString("timestamp", getExifInformation(uri));
 				dataArrayMap.pushMap(dataMap);
 			} else if (Intent.ACTION_SEND_MULTIPLE.equals(action) && mediaTypesSupported.contains(typePart)) {
 				ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
@@ -79,10 +83,22 @@ public class ShareModule extends ReactContextBaseJavaModule {
 					WritableMap dataMap = Arguments.createMap();
 					dataMap.putString("type", type);
 					dataMap.putString("value", "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri));
+					dataMap.putString("timestamp", getExifInformation(uri));
 					dataArrayMap.pushMap(dataMap);
 				}
 			}
 		}
 		return dataArrayMap;
+	}
+
+	public String getExifInformation(Uri uri){
+		try (InputStream inputStream = getReactApplicationContext().getContentResolver().openInputStream(uri)){
+			ExifInterface exif = new ExifInterface(inputStream);
+			String timestamp = exif.getAttribute(ExifInterface.TAG_DATETIME);
+			return timestamp;
+		}catch (Exception e){
+			return null;
+		}
+
 	}
 }
