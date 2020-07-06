@@ -105,9 +105,9 @@ RCT_REMAP_METHOD(data,
         
         // latitude longitude regex
         NSError *error = NULL;
-         
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[\+-]?[0-9]+(\.[0-9]+)?[\+-]?[0-9]+(\.[0-9]+)?"
-                                                                               options:NSRegularExpressionCaseInsensitive
+        NSString *pattern = @"([\+-][0-9\.]*)";
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                               options:0
                                                                                  error:&error];
         
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
@@ -169,20 +169,20 @@ RCT_REMAP_METHOD(data,
                                     timestamp = [dateFormatter stringFromDate:videoCretionDate];
                                     // NSLog(@"timestamp = %@", timestamp);
                                 }else if([key isEqualToString:@"com.apple.quicktime.location.ISO6709"]){
-                                    NSLog(@"Check for matches");
                                     NSArray *matches = [regex matchesInString:value
                                     options:0
                                       range:NSMakeRange(0, [value length])];
-                                    NSTextCheckingResult *latMatch = [matches objectAtIndex:0];
-                                    NSRange latRange = [latMatch rangeAtIndex:1];
-                                    latitude = [value substringWithRange:latRange];
-                                    
-                                    NSTextCheckingResult *lonMatch = [matches objectAtIndex:1];
-                                    NSRange lonRange = [lonMatch rangeAtIndex:1];
-                                    longitude = [value substringWithRange:lonRange];
+                                    if(matches != nil && [matches count] > 0){
+                                        NSTextCheckingResult *latMatch = [matches objectAtIndex:0];
+                                        latitude = [value substringWithRange:[latMatch range]];
+                                        NSTextCheckingResult *lonMatch = [matches objectAtIndex:1];
+                                        longitude = [value substringWithRange:[lonMatch range]];
+                                        // NSLog(@"lat = %@, long = %@", latitude, longitude);
+                                    }
+                                    // NSLog(@"val = %@", value);
                                     
                                 }
-                                NSLog(@"key = %@, value = %@", key, value);
+                                // NSLog(@"key = %@, value = %@", key, value);
                             }
                         }
                         // Get the timestamp ; added for simulator
