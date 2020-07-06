@@ -23,6 +23,19 @@ NSExtensionContext* extensionContext;
     return nil;
 }
 
+static NSArray *metadatas;
+
+- (NSArray *)metadatas
+{
+  if (!metadatas) {
+    metadatas = @[
+      @"com.apple.quicktime.creationdate",
+      @"com.apple.quicktime.location.ISO6709"
+    ];
+  }
+  return metadatas;
+}
+
 RCT_EXPORT_MODULE();
 
 - (void)viewDidLoad {
@@ -75,7 +88,6 @@ RCT_REMAP_METHOD(data,
         NSExtensionItem *item = [context.inputItems firstObject];
 
         NSArray *attachments = item.attachments;
-
         __block NSItemProvider *imageProvider = nil;
         __block NSItemProvider *textProvider = nil;
         // __block NSItemProvider *videoProvider = nil;
@@ -85,6 +97,19 @@ RCT_REMAP_METHOD(data,
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
         [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
 
+        NSDateFormatter *rfc3339DateFormatter = [[NSDateFormatter alloc] init];
+        NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+        [rfc3339DateFormatter setLocale:enUSPOSIXLocale];
+        [rfc3339DateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+        [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+        
+        // latitude longitude regex
+        NSError *error = NULL;
+         
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"[\+-]?[0-9]+(\.[0-9]+)?[\+-]?[0-9]+(\.[0-9]+)?"
+                                                                               options:NSRegularExpressionCaseInsensitive
+                                                                                 error:&error];
+        
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
             if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER] || [provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER_MPEG_4] || [provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER_QUICK_TIME_MOVIE]){
                 imageProvider = provider;
@@ -131,34 +156,43 @@ RCT_REMAP_METHOD(data,
                         NSURL* url = (NSURL *)item;
                         filePath = [url absoluteString];
                         type = @"video";
-
-                        // Get the timestamp from the file
-                        NSDate *fileDate;
-                        [url getResourceValue:&fileDate forKey:NSURLContentModificationDateKey error:&error];
-                        timestamp = [dateFormatter stringFromDate:fileDate];
-                        //NSLog(@"File Date:%@", timestamp);
-                        
-                        // Other way to get timestamp
-                        //NSError *err = nil;
-                        //NSDictionary *dic2 = [[NSFileManager defaultManager] attributesOfItemAtPath:url.path error:&err];
-                        //NSLog(@"File modification Date:%@", dic2[NSFileModificationDate]);
-
-                        // NSData *data = [NSData dataWithContentsOfURL:url];
-                        //NSArray *keys = [NSArray arrayWithObjects:@"createDate",nil];
-                        //NSArray *objs = [NSArray arrayWithObjects:@"createDate",nil];
-                        // NSDictionary *opts = [NSDictionary
-                                              // dictionaryWithObjects:objs
-                        //                      forKeys:keys];
-                        // AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:nil];
-                        
-                        // NSArray<AVMetadataItem *> *metadata = [urlAsset metadata];
+                        // get the create time
+                        AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:nil];
+                        NSArray<AVMetadataItem *> *metadata = [urlAsset metadata];
                         // NSLog(@"meta data %@", metadata);
-                        // AVAsset *asset = [AVAsset assetWithURL:url];
-                        //AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc]initWithAsset:asset];
-                        //CMTime time = CMTimeMake(1, 1);
-                        //CGImageRef imageRef = [imageGenerator copyCGImageAtTime:time actualTime:NULL error:NULL];
-                        // sharedImage = [UIImage imageWithCGImage:imageRef];
-                        
+                        if(metadata != nil){
+                            for (AVMetadataItem *meta in metadata) {
+                                NSString *key = (NSString *)[meta key];
+                                NSString *value = [meta stringValue];
+                                if ([key isEqualToString:@"com.apple.quicktime.creationdate"]){
+                                    NSDate *videoCretionDate = [rfc3339DateFormatter dateFromString:value];
+                                    timestamp = [dateFormatter stringFromDate:videoCretionDate];
+                                    // NSLog(@"timestamp = %@", timestamp);
+                                }else if([key isEqualToString:@"com.apple.quicktime.location.ISO6709"]){
+                                    NSLog(@"Check for matches");
+                                    NSArray *matches = [regex matchesInString:value
+                                    options:0
+                                      range:NSMakeRange(0, [value length])];
+                                    NSTextCheckingResult *latMatch = [matches objectAtIndex:0];
+                                    NSRange latRange = [latMatch rangeAtIndex:1];
+                                    latitude = [value substringWithRange:latRange];
+                                    
+                                    NSTextCheckingResult *lonMatch = [matches objectAtIndex:1];
+                                    NSRange lonRange = [lonMatch rangeAtIndex:1];
+                                    longitude = [value substringWithRange:lonRange];
+                                    
+                                }
+                                NSLog(@"key = %@, value = %@", key, value);
+                            }
+                        }
+                        // Get the timestamp ; added for simulator
+                        if(timestamp == nil){
+                            NSDate *fileDate;
+                            [url getResourceValue:&fileDate forKey:NSURLContentModificationDateKey error:&error];
+                            timestamp = [dateFormatter stringFromDate:fileDate];
+                            // NSLog(@"File Date:%@", timestamp);
+                        }
+                                                
                         
                     } else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
                         NSURL* url = (NSURL *)item;
