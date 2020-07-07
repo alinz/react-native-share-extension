@@ -23,19 +23,6 @@ NSExtensionContext* extensionContext;
     return nil;
 }
 
-static NSArray *metadatas;
-
-- (NSArray *)metadatas
-{
-  if (!metadatas) {
-    metadatas = @[
-      @"com.apple.quicktime.creationdate",
-      @"com.apple.quicktime.location.ISO6709"
-    ];
-  }
-  return metadatas;
-}
-
 RCT_EXPORT_MODULE();
 
 - (void)viewDidLoad {
