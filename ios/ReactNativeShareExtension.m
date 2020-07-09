@@ -19,6 +19,12 @@ NSExtensionContext* extensionContext;
     
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+    // only do this if your module initialization relies on calling UIKit!
+    return YES;
+}
+
 - (UIView*) shareView {
     return nil;
 }
