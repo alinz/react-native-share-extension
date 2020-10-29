@@ -55,73 +55,103 @@ RCT_REMAP_METHOD(data,
                  resolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
-    [self extractDataFromContext: extensionContext withCallback:^(NSString* val, NSString* contentType, NSException* err) {
+    [self extractDataFromContext: extensionContext withCallback:^(NSArray* items, NSException* err) {
         if(err) {
             reject(@"error", err.description, nil);
         } else {
-            resolve(@{
-                      @"type": contentType,
-                      @"value": val
-                      });
+            resolve(items);
         }
     }];
 }
 
-- (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSString *value, NSString* contentType, NSException *exception))callback {
+- (void)extractDataFromContext:(NSExtensionContext *)context withCallback:(void(^)(NSArray *items, NSException *exception))callback {
     @try {
+        __block NSMutableArray *itemArray = [NSMutableArray new];
         NSExtensionItem *item = [context.inputItems firstObject];
+
         NSArray *attachments = item.attachments;
 
         __block NSItemProvider *urlProvider = nil;
         __block NSItemProvider *imageProvider = nil;
         __block NSItemProvider *textProvider = nil;
+        __block NSUInteger index = 0;
 
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
-            if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
+            if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
+                imageProvider = provider;
+                [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                    /**
+                     * Save the image to NSTemporaryDirectory(), which cleans itself tri-daily.
+                     * This is necessary as the iOS 11 screenshot editor gives us a UIImage, while
+                     * sharing from Photos and similar apps gives us a URL
+                     * Therefore the solution is to save a UIImage, either way, and return the local path to that temp UIImage
+                     * This path will be sent to React Native and can be processed and accessed RN side.
+                     **/
+
+                    UIImage *sharedImage;
+                    NSString *filename;
+
+                    if ([(NSObject *)item isKindOfClass:[UIImage class]]){
+                        sharedImage = (UIImage *)item;
+                        NSString *name = @"RNSE_TEMP_IMG_";
+                        NSString *nbFiles = [NSString stringWithFormat:@"%@",  @(index)];
+                        NSString *fullname = [name stringByAppendingString:(nbFiles)];
+                        filename = [fullname stringByAppendingPathExtension:@"png"];
+                    }else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
+                        NSURL* url = (NSURL *)item;
+                        filename = [[url lastPathComponent] lowercaseString];
+                        NSData *data = [NSData dataWithContentsOfURL:url];
+                        sharedImage = [UIImage imageWithData:data];
+                    }
+                    NSString *filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
+
+                    [UIImageJPEGRepresentation(sharedImage, 1.0) writeToFile:filePath atomically:YES];
+                    index += 1;
+
+                    [itemArray addObject: @{
+                                            @"type": [filePath pathExtension],
+                                            @"value": filePath
+                                            }];
+                    if (callback && (index == [attachments count])) {
+                        callback(itemArray, nil);
+                    }
+
+                }];
+            } else if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
                 urlProvider = provider;
-                *stop = YES;
+                index += 1;
+                [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                    NSURL *url = (NSURL *)item;
+                    [itemArray addObject: @{
+                                            @"type": @"text/plain",
+                                            @"value": [url absoluteString]
+                                            }];
+                    if (callback && (index == [attachments count])) {
+                        callback(itemArray, nil);
+                    }
+                }];
             } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
                 textProvider = provider;
-                *stop = YES;
-            } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
-                imageProvider = provider;
-                *stop = YES;
+                [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                    NSString *text = (NSString *)item;
+                    index += 1;
+                    [itemArray addObject: @{
+                                            @"type": @"text/plain",
+                                            @"value": text
+                                            }];
+                    if (callback && (index == [attachments count])) {
+                        callback(itemArray, nil);
+                    }
+                }];
+            } else {
+                index += 1;
             }
         }];
-
-        if(urlProvider) {
-            [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                NSURL *url = (NSURL *)item;
-
-                if(callback) {
-                    callback([url absoluteString], @"text/plain", nil);
-                }
-            }];
-        } else if (imageProvider) {
-            [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                NSURL *url = (NSURL *)item;
-
-                if(callback) {
-                    callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
-                }
-            }];
-        } else if (textProvider) {
-            [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
-                NSString *text = (NSString *)item;
-
-                if(callback) {
-                    callback(text, @"text/plain", nil);
-                }
-            }];
-        } else {
-            if(callback) {
-                callback(nil, nil, [NSException exceptionWithName:@"Error" reason:@"couldn't find provider" userInfo:nil]);
-            }
-        }
+        //        }
     }
     @catch (NSException *exception) {
         if(callback) {
-            callback(nil, nil, exception);
+            callback(nil, exception);
         }
     }
 }
