@@ -122,7 +122,7 @@ RCT_REMAP_METHOD(data,
                      * Therefore the solution is to save a UIImage, either way, and return the local path to that temp UIImage
                      * This path will be sent to React Native and can be processed and accessed RN side.
                      **/
-                    // CGImageSourceRef source = CGImageSourceCreateWithData((CFMutableDataRef)item, NULL);
+                    //CGImageSourceRef source = CGImageSourceCreateWithData((CFMutableDataRef)item, NULL);
                     // NSDictionary* metadata = (NSDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source,0,NULL));
                     // NSLog(@"image data %@", metadata);
                     
@@ -134,8 +134,9 @@ RCT_REMAP_METHOD(data,
                     NSString *latitude = @"";
                     NSString *longitude = @"";
                     NSString *filePath = @"";
-                    
+                    NSURL* url;
                     if ([(NSObject *)item isKindOfClass:[UIImage class]]){
+                        type = @"image";
                         sharedImage = (UIImage *)item;
                         NSString *name = @"RNSE_TEMP_IMG_";
                         NSString *nbFiles = [NSString stringWithFormat:@"%@",  @(index)];
@@ -143,12 +144,12 @@ RCT_REMAP_METHOD(data,
                         filename = [fullname stringByAppendingPathExtension:@"png"];
                         filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
                         [UIImageJPEGRepresentation(sharedImage, 1.0) writeToFile:filePath atomically:YES];
-                        type = @"image";
-                    
+                        
                     }else if(([VideoIdentifier isEqualToString:VIDEO_IDENTIFIER_MPEG_4] || [VideoIdentifier isEqualToString:VIDEO_IDENTIFIER_QUICK_TIME_MOVIE]) && [(NSObject *)item isKindOfClass:[NSURL class]]){
-                        NSURL* url = (NSURL *)item;
-                        filePath = [url absoluteString];
+                        // shared media is a video
                         type = @"video";
+                        url = (NSURL *)item;
+                        filePath = [url absoluteString];
                         // get the create time
                         AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:nil];
                         NSArray<AVMetadataItem *> *metadata = [urlAsset metadata];
@@ -173,32 +174,23 @@ RCT_REMAP_METHOD(data,
                                         // NSLog(@"lat = %@, long = %@", latitude, longitude);
                                     }
                                     // NSLog(@"val = %@", value);
-                                    
                                 }
                                 // NSLog(@"key = %@, value = %@", key, value);
                             }
                         }
-                        // Get the timestamp ; added for simulator
-                        if(timestamp == nil){
-                            NSDate *fileDate;
-                            [url getResourceValue:&fileDate forKey:NSURLContentModificationDateKey error:&error];
-                            timestamp = [dateFormatter stringFromDate:fileDate];
-                            // NSLog(@"File Date:%@", timestamp);
-                        }
-                                                
                         
                     } else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
-                        NSURL* url = (NSURL *)item;
+                        // shared media is a photo
+                        type = @"image";
+                        url = (NSURL *)item;
                         filePath = [url absoluteString];
                         filename = [[url lastPathComponent] lowercaseString];
                         NSData *data = [NSData dataWithContentsOfURL:url];
-                        //sharedImage = [UIImage imageWithData:data];
                         // get meta data for files
                         CGImageSourceRef source = CGImageSourceCreateWithData((CFMutableDataRef)data, NULL);
                         NSDictionary* metadata = (NSDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source,0,NULL));
                         // NSLog(@"image data %@", metadata);
                         if(metadata){
-                            
                             timestamp = metadata[@"{Exif}"][@"DateTimeOriginal"];
                             orientation = metadata[@"Orientation"];
                             latitude = metadata[@"{GPS}"][@"Latitude"];
@@ -206,7 +198,14 @@ RCT_REMAP_METHOD(data,
                         }
                         //filePath = [NSTemporaryDirectory() stringByAppendingPathComponent:filename];
                         //[UIImageJPEGRepresentation(sharedImage, 1.0) writeToFile:filePath atomically:YES];
-                        type = @"image";
+                        
+                    }
+                    // last attempt to get timestamp from file
+                    if(timestamp == nil){
+                        NSDate *fileDate;
+                        [url getResourceValue:&fileDate forKey:NSURLCreationDateKey error:&error];
+                        timestamp = [dateFormatter stringFromDate:fileDate];
+                        // NSLog(@"File Date:%@", timestamp);
                     }
                     
                     index += 1;
@@ -222,6 +221,7 @@ RCT_REMAP_METHOD(data,
                     if(longitude == nil){
                         longitude = @"";
                     }
+                   
                     [itemArray addObject: @{
                                             @"type": type,
                                             @"value": filePath,
@@ -262,3 +262,4 @@ RCT_REMAP_METHOD(data,
 }
 
 @end
+
