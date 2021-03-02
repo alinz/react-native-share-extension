@@ -4,7 +4,7 @@
 
 #define URL_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
-#define TEXT_IDENTIFIER (NSString *)kUTTypeCommaSeparatedText
+#define TEXT_IDENTIFIER (NSString *)kUTTypeText
 
 NSExtensionContext* extensionContext;
 
@@ -80,15 +80,18 @@ RCT_REMAP_METHOD(data,
             if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
                 urlProvider = provider;
                 *stop = YES;
-            } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
-                textProvider = provider;
-                *stop = YES;
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                 imageProvider = provider;
                 *stop = YES;
             }
         }];
-
+        
+       // for text support we can use this, but we have to do some research in object c, how it works.
+       // else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
+       //     textProvider = provider;
+       //     *stop = YES;
+       // }
+        
         if(urlProvider) {
             [urlProvider loadItemForTypeIdentifier:URL_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
