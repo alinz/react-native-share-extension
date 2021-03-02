@@ -4,8 +4,7 @@
 
 #define URL_IDENTIFIER @"public.url"
 #define IMAGE_IDENTIFIER @"public.image"
-#define TEXT_COMMA_SEPARATED_IDENTIFIER (NSString *)kUTTypeCommaSeparatedText
-#define TEXT_IDENTIFIER (NSString *)kUTTypeText
+#define TEXT_IDENTIFIER (NSString *)kUTTypeCommaSeparatedText
 
 NSExtensionContext* extensionContext;
 
@@ -81,7 +80,7 @@ RCT_REMAP_METHOD(data,
             if([provider hasItemConformingToTypeIdentifier:URL_IDENTIFIER]) {
                 urlProvider = provider;
                 *stop = YES;
-            } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER] || [provider hasItemConformingToTypeIdentifier:TEXT_COMMA_SEPARATED_IDENTIFIER]){
+            } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
                 textProvider = provider;
                 *stop = YES;
             } else if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
