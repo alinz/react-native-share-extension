@@ -3,6 +3,12 @@
   "version": "2.0.0",
   "description": "share extension using react-native for both ios and android",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "android",
+    "ios",
+    "lib/"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
