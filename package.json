@@ -7,8 +7,18 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "git"
+    "type": "git",
+    "url": "git@github.com:sgiggles/react-native-share-extension.git"
   },
   "keywords": ["react-component", "react-native", "share-extension"],
-  "license": "MIT"
+  "author": {
+    "name": "Sgiggles, Inc",
+    "email": "tech@sgiggles.com",
+    "url": "http://github.com/sgiggles"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sgiggles/react-native-share-extension"
+  },
+  "homepage": "https://github.com/sgiggles/react-native-share-extension"
 }
