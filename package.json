@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-    "type": "git",
+    "type": "git"
   },
   "keywords": ["react-component", "react-native", "share-extension"],
   "license": "MIT",
