@@ -85,17 +85,14 @@ RCT_REMAP_METHOD(data,
         __block NSItemProvider *textProvider = nil;
         // __block NSItemProvider *videoProvider = nil;
         __block NSUInteger index = 0;
-        
-        // Formatter used for videos
+        // NSLog(@"Log Item 1");
+        // NSLog(@"context items %@", context.inputItems);
+        // Formatter date is converted to for video
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc]init];
-        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
-
-        NSDateFormatter *rfc3339DateFormatter = [[NSDateFormatter alloc] init];
-        NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-        [rfc3339DateFormatter setLocale:enUSPOSIXLocale];
-        [rfc3339DateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
-        [rfc3339DateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-        
+        [dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss.SSSZZZZZ"];
+        // Format of date in the video meta info
+        NSDateFormatter *videoDateFormatter = [[NSDateFormatter alloc] init];
+        [videoDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
         // latitude longitude regex
         NSError *error = NULL;
         NSString *pattern = @"([\+-][0-9\.]*)";
@@ -106,6 +103,7 @@ RCT_REMAP_METHOD(data,
         [attachments enumerateObjectsUsingBlock:^(NSItemProvider *provider, NSUInteger idx, BOOL *stop) {
             if ([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER] || [provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER_MPEG_4] || [provider hasItemConformingToTypeIdentifier:VIDEO_IDENTIFIER_QUICK_TIME_MOVIE]){
                 imageProvider = provider;
+                // NSLog(@"Log Item 2");
                 NSString *VideoIdentifier;
                 if([provider hasItemConformingToTypeIdentifier:IMAGE_IDENTIFIER]){
                     VideoIdentifier = IMAGE_IDENTIFIER;
@@ -125,17 +123,22 @@ RCT_REMAP_METHOD(data,
                     //CGImageSourceRef source = CGImageSourceCreateWithData((CFMutableDataRef)item, NULL);
                     // NSDictionary* metadata = (NSDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source,0,NULL));
                     // NSLog(@"image data %@", metadata);
-                    
+                    // NSLog(@"Log Item 3");
                     UIImage *sharedImage;
                     NSString *filename;
                     NSString *type = @"";
                     NSString *orientation =@"";
                     NSString *timestamp = @"";
+                    NSString *timeOriginal = @"";
+                    NSString *subsecTimeOriginal = @"";
+                    NSString *offsetTimeOriginal = @"";
                     NSString *latitude = @"";
                     NSString *longitude = @"";
                     NSString *filePath = @"";
                     NSURL* url;
                     if ([(NSObject *)item isKindOfClass:[UIImage class]]){
+                        // NSLog(@"Log Item 4");
+                        // NSLog(@"image data %@", item);
                         type = @"image";
                         sharedImage = (UIImage *)item;
                         NSString *name = @"RNSE_TEMP_IMG_";
@@ -147,33 +150,40 @@ RCT_REMAP_METHOD(data,
                         
                     }else if(([VideoIdentifier isEqualToString:VIDEO_IDENTIFIER_MPEG_4] || [VideoIdentifier isEqualToString:VIDEO_IDENTIFIER_QUICK_TIME_MOVIE]) && [(NSObject *)item isKindOfClass:[NSURL class]]){
                         // shared media is a video
+                        // NSLog(@"Log Item 5");
                         type = @"video";
                         url = (NSURL *)item;
                         filePath = [url absoluteString];
                         // get the create time
                         AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:url options:nil];
                         NSArray<AVMetadataItem *> *metadata = [urlAsset metadata];
-                        // NSLog(@"meta data %@", metadata);
+                        // NSLog(@"video data %@", metadata);
                         if(metadata != nil){
                             for (AVMetadataItem *meta in metadata) {
-                                NSString *key = (NSString *)[meta key];
-                                NSString *value = [meta stringValue];
-                                if ([key isEqualToString:@"com.apple.quicktime.creationdate"]){
-                                    NSDate *videoCretionDate = [rfc3339DateFormatter dateFromString:value];
-                                    timestamp = [dateFormatter stringFromDate:videoCretionDate];
-                                    // NSLog(@"timestamp = %@", timestamp);
-                                }else if([key isEqualToString:@"com.apple.quicktime.location.ISO6709"]){
-                                    NSArray *matches = [regex matchesInString:value
-                                    options:0
-                                      range:NSMakeRange(0, [value length])];
-                                    if(matches != nil && [matches count] > 0){
-                                        NSTextCheckingResult *latMatch = [matches objectAtIndex:0];
-                                        latitude = [value substringWithRange:[latMatch range]];
-                                        NSTextCheckingResult *lonMatch = [matches objectAtIndex:1];
-                                        longitude = [value substringWithRange:[lonMatch range]];
-                                        // NSLog(@"lat = %@, long = %@", latitude, longitude);
+                                // Check added because of of NSCFNumber key's found
+                                // key class = __NSCFNumber, key=\U00a9too
+                                // https://stackoverflow.com/questions/17127924/how-do-i-get-the-datatype-of-the-value-given-the-key-of-nsdictionary
+                                if( [ [meta key] isKindOfClass:[NSString class]]) {
+                                    NSString *key = (NSString *)[meta key];
+                                    NSString *value = [meta stringValue];
+                                    if ([key isEqualToString:@"com.apple.quicktime.creationdate"]){
+                                        NSDate *videoCreationDate = [videoDateFormatter dateFromString:value];
+                                        if (videoCreationDate != nil) {
+                                            timestamp = [dateFormatter stringFromDate:videoCreationDate];
+                                        }
+                                    }else if([key isEqualToString:@"com.apple.quicktime.location.ISO6709"]){
+                                        NSArray *matches = [regex matchesInString:value
+                                        options:0
+                                          range:NSMakeRange(0, [value length])];
+                                        if(matches != nil && [matches count] > 0){
+                                            NSTextCheckingResult *latMatch = [matches objectAtIndex:0];
+                                            latitude = [value substringWithRange:[latMatch range]];
+                                            NSTextCheckingResult *lonMatch = [matches objectAtIndex:1];
+                                            longitude = [value substringWithRange:[lonMatch range]];
+                                            // NSLog(@"lat = %@, long = %@", latitude, longitude);
+                                        }
+                                        // NSLog(@"val = %@", value);
                                     }
-                                    // NSLog(@"val = %@", value);
                                 }
                                 // NSLog(@"key = %@, value = %@", key, value);
                             }
@@ -181,6 +191,8 @@ RCT_REMAP_METHOD(data,
                         
                     } else if ([(NSObject *)item isKindOfClass:[NSURL class]]){
                         // shared media is a photo
+                        // NSLog(@"Log Item 6");
+                        // NSLog(@"%@",item);
                         type = @"image";
                         url = (NSURL *)item;
                         filePath = [url absoluteString];
@@ -189,9 +201,12 @@ RCT_REMAP_METHOD(data,
                         // get meta data for files
                         CGImageSourceRef source = CGImageSourceCreateWithData((CFMutableDataRef)data, NULL);
                         NSDictionary* metadata = (NSDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source,0,NULL));
-                        // NSLog(@"image data %@", metadata);
+                        // NSLog(@"url image data %@", metadata);
                         if(metadata){
-                            timestamp = metadata[@"{Exif}"][@"DateTimeOriginal"];
+                            timeOriginal = metadata[@"{Exif}"][@"DateTimeOriginal"];
+                            subsecTimeOriginal = metadata[@"{Exif}"][@"SubsecTimeOriginal"];
+                            offsetTimeOriginal = metadata[@"{Exif}"][@"OffsetTimeOriginal"];
+                            timestamp = [NSString stringWithFormat:@"%@.%@%@", timeOriginal, subsecTimeOriginal, offsetTimeOriginal];
                             orientation = metadata[@"Orientation"];
                             latitude = metadata[@"{GPS}"][@"Latitude"];
                             longitude =metadata[@"{GPS}"][@"Longitude"];
@@ -236,6 +251,7 @@ RCT_REMAP_METHOD(data,
 
                 }];
             } else if ([provider hasItemConformingToTypeIdentifier:TEXT_IDENTIFIER]){
+                // NSLog(@"Log Item 7");
                 textProvider = provider;
                 [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                     NSString *text = (NSString *)item;
